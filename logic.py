@@ -22,7 +22,7 @@ from .logic_normal import LogicNormal
 class Logic(object):
     db_default = {
         'db_version': '1',
-        'interval': '1',
+        'interval': '* * * * *',
         'auto_start': 'False',
         'default_save_path': os.path.join(path_data, 'download', package_name),
         'default_filename': '%(title)s.%(id)s.%(ext)s'
