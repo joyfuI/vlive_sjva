@@ -17,7 +17,7 @@ from .api_youtube_dl import APIYoutubeDL
 #########################################################
 
 class LogicNormal(object):
-    download_list = {}
+    download_list = set()
 
     @staticmethod
     def scheduler_function():
@@ -25,17 +25,13 @@ class LogicNormal(object):
             if not i.is_live:
                 continue
             logger.debug('scheduler download %s', i.url)
-            video_url = LogicNormal.get_first_video(i.url)  # 첫번째 영상
-            if video_url is None:
+            video_url = LogicNormal.get_first_live_video(i.url)  # 첫번째 영상
+            if video_url is None or video_url in LogicNormal.download_list:
                 continue
             ModelScheduler.find(i.id).update(LogicNormal.get_count_video(i.url))  # 임시
-            info_dict = APIYoutubeDL.info_dict(package_name, video_url)['info_dict']
-            if info_dict is None or info_dict['id'] in LogicNormal.download_list:
-                continue
-            if info_dict.get('is_live'):
-                LogicNormal.download_list[info_dict['id']] = None
-                APIYoutubeDL.download(package_name, i.key, video_url, i.filename, i.save_path, None, None, None, None,
-                                      None, None, True)
+            LogicNormal.download_list.add(video_url)
+            APIYoutubeDL.download(package_name, i.key, video_url, i.filename, i.save_path, None, None, None, None, None,
+                                  None, True)
 
     @staticmethod
     def scheduler_function2():
@@ -123,12 +119,12 @@ class LogicNormal(object):
             os.remove(archive)
 
     @staticmethod
-    def get_first_video(channel_url):
+    def get_first_live_video(channel_url):
         channel_id = channel_url.split('/')[-1]
         url = 'https://www.vlive.tv/globalv-web/vam-web/post/v1.0/channel-%s/starPosts' % channel_id
         params = {
             'appId': '8c6cc7b45d2568fb668be6e05b6e5a3b',
-            'fields': 'contentType,title,url',
+            'fields': 'contentType,officialVideo,title,url',
             'gcc': 'KR',
             'locale': 'ko_KR'
         }
@@ -139,7 +135,8 @@ class LogicNormal(object):
         video_url = None
         for data in json['data']:
             if data['contentType'] == 'VIDEO':
-                video_url = data['url']
+                if data['officialVideo']['type'] == 'LIVE':
+                    video_url = data['url']
                 break
         return video_url
 
