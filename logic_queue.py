@@ -33,8 +33,8 @@ class LogicQueue(object):
                 if i.archive:
                     scheduler_id = os.path.splitext(os.path.basename(i.archive))[0]
                     LogicNormal.download_list[scheduler_id] = None
-                ret = APIYoutubeDL.download(package_name, i.key, i.url, i.filename, i.save_path, None, None, None, None,
-                                            None, i.archive, False)
+                ret = APIYoutubeDL.download(package_name, i.key, i.url, filename=i.filename, save_path=i.save_path,
+                                            archive=i.archive, start=False)
                 if ret['errorCode'] == 0:
                     i.set_index(ret['index'])
                 else:
@@ -84,8 +84,8 @@ class LogicQueue(object):
             if entity.archive:
                 scheduler_id = os.path.splitext(os.path.basename(entity.archive))[0]
                 LogicNormal.download_list[scheduler_id] = None
-            ret = APIYoutubeDL.download(package_name, entity.key, url, entity.filename, entity.save_path, None, None,
-                                        None, None, None, entity.archive, False)
+            ret = APIYoutubeDL.download(package_name, entity.key, url, filename=entity.filename,
+                                        save_path=entity.save_path, archive=entity.archive, start=False)
             if ret['errorCode'] == 0:
                 entity.set_index(ret['index'])
             else:

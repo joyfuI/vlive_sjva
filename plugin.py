@@ -35,7 +35,7 @@ menu = {
 }
 
 plugin_info = {
-    'version': '0.1.2',
+    'version': '0.1.3',
     'name': 'vlive',
     'category_name': 'vod',
     'developer': 'joyfuI',
