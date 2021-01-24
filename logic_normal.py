@@ -3,6 +3,8 @@
 # python
 import os
 import re
+import time
+from threading import Thread
 
 # third-party
 import requests
@@ -29,9 +31,20 @@ class LogicNormal(object):
             if video_url is None or video_url in LogicNormal.download_list:
                 continue
             ModelScheduler.find(i.id).update(LogicNormal.get_count_video(i.url))  # 임시
-            LogicNormal.download_list.add(video_url)
-            APIYoutubeDL.download(package_name, i.key, video_url, i.filename, i.save_path, None, None, None, None, None,
-                                  None, True)
+            download = APIYoutubeDL.download(package_name, i.key, video_url, filename=i.filename, save_path=i.save_path,
+                                             start=True)
+            if download['errorCode'] == 0:
+                LogicNormal.download_list.add(video_url)
+                Thread(target=LogicNormal.download_check_function, args=(video_url, download['index'], i.key)).start()
+            else:
+                logger.debug('scheduler download fail %s', download['errorCode'])
+
+    @staticmethod
+    def download_check_function(url, index, key):
+        time.sleep(10)  # 10초 대기
+        status = APIYoutubeDL.status(package_name, index, key)
+        if status['status'] == 'ERROR':
+            LogicNormal.download_list.remove(url)
 
     @staticmethod
     def scheduler_function2():
