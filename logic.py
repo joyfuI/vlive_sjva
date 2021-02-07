@@ -47,9 +47,9 @@ class Logic(object):
             Logic.db_init()  # DB 초기화
 
             # archive 파일 저장 폴더 생성
-            path = os.path.join(path_data, 'db', package_name)
-            if not os.path.isdir(path):
-                os.makedirs(path)
+            # path = os.path.join(path_data, 'db', package_name)
+            # if not os.path.isdir(path):
+            #     os.makedirs(path)
 
             if ModelSetting.get_bool('auto_start'):
                 Logic.scheduler_start()
