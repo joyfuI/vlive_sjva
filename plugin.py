@@ -3,7 +3,6 @@
 # python
 import os
 import traceback
-from datetime import date
 
 # third-party
 from flask import Blueprint, request, render_template, redirect, jsonify
@@ -35,7 +34,7 @@ menu = {
 }
 
 plugin_info = {
-    'version': '0.1.3',
+    'version': '0.1.4',
     'name': 'vlive',
     'category_name': 'vod',
     'developer': 'joyfuI',
@@ -46,7 +45,7 @@ plugin_info = {
 
 def plugin_load():
     Logic.plugin_load()
-    LogicQueue.queue_load()
+    # LogicQueue.queue_load()
 
 def plugin_unload():
     Logic.plugin_unload()
@@ -108,19 +107,19 @@ def ajax(sub):
             ret = Logic.one_execute()
             return jsonify(ret)
 
-        elif sub == 'reset_db':
-            ret = Logic.reset_db()
-            return jsonify(ret)
+        # elif sub == 'reset_db':
+        #     ret = Logic.reset_db()
+        #     return jsonify(ret)
 
         # UI 요청
-        elif sub == 'analysis':
-            url = request.form['url']
-            ret = LogicNormal.analysis(url)
-            return jsonify(ret)
+        # elif sub == 'analysis':
+        #     url = request.form['url']
+        #     ret = LogicNormal.analysis(url)
+        #     return jsonify(ret)
 
-        elif sub == 'add_download':
-            ret = LogicNormal.download(request.form)
-            return jsonify(ret)
+        # elif sub == 'add_download':
+        #     ret = LogicNormal.download(request.form)
+        #     return jsonify(ret)
 
         elif sub == 'list_scheduler':
             ret = LogicNormal.get_scheduler()
@@ -134,9 +133,9 @@ def ajax(sub):
             ret = LogicNormal.del_scheduler(request.form['id'])
             return jsonify(ret)
 
-        elif sub == 'del_archive':
-            LogicNormal.del_archive(request.form['id'])
-            return jsonify([])
+        # elif sub == 'del_archive':
+        #     LogicNormal.del_archive(request.form['id'])
+        #     return jsonify([])
     except Exception as e:
         logger.error('Exception:%s', e)
         logger.error(traceback.format_exc())

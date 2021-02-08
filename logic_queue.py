@@ -67,7 +67,7 @@ class LogicQueue(object):
                         elif ret['status'] in ('ERROR', 'STOP'):
                             break
                 else:
-                    logger.debug('queue download fail %s', ret)
+                    logger.debug('queue download fail %s', ret['errorCode'])
                 if entity.archive:
                     scheduler_id = os.path.splitext(os.path.basename(entity.archive))[0]
                     del LogicNormal.download_list[scheduler_id]

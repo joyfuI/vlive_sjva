@@ -23,19 +23,21 @@ class LogicNormal(object):
 
     @staticmethod
     def scheduler_function():
-        for i in ModelScheduler.get_list():
-            if not i.is_live:
+        for scheduler in ModelScheduler.get_list():
+            if not scheduler.is_live:
                 continue
-            logger.debug('scheduler download %s', i.url)
-            video_url = LogicNormal.get_first_live_video(i.url)  # 첫번째 영상
+            logger.debug('scheduler download %s', scheduler.url)
+            video_url = LogicNormal.get_first_live_video(scheduler.url)  # 첫번째 영상
             if video_url is None or video_url in LogicNormal.download_list:
                 continue
-            ModelScheduler.find(i.id).update(LogicNormal.get_count_video(i.url))  # 임시
-            download = APIYoutubeDL.download(package_name, i.key, video_url, filename=i.filename, save_path=i.save_path,
-                                             start=True)
+            download = APIYoutubeDL.download(package_name, scheduler.key, video_url, filename=scheduler.filename,
+                                             save_path=scheduler.save_path, start=True)
+            scheduler.update(LogicNormal.get_count_video(scheduler.url))  # 임시
             if download['errorCode'] == 0:
                 LogicNormal.download_list.add(video_url)
-                Thread(target=LogicNormal.download_check_function, args=(video_url, download['index'], i.key)).start()
+                Thread(target=LogicNormal.download_check_function,
+                       args=(video_url, download['index'], scheduler.key)).start()
+                scheduler.update()
             else:
                 logger.debug('scheduler download fail %s', download['errorCode'])
 
@@ -46,41 +48,41 @@ class LogicNormal(object):
         if status['status'] == 'ERROR':
             LogicNormal.download_list.remove(url)
 
-    @staticmethod
-    def scheduler_function2():
-        from .logic_queue import LogicQueue
+    # @staticmethod
+    # def scheduler_function2():
+    #     from .logic_queue import LogicQueue
+    #
+    #     for i in ModelScheduler.get_list():
+    #         if i.is_live:
+    #             continue
+    #         logger.debug('scheduler download %s', i.url)
+    #         info_dict = APIYoutubeDL.info_dict(package_name, i.url)['info_dict']
+    #         if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
+    #             continue
+    #         ModelScheduler.find(i.id).update(len(info_dict['entries']))
+    #         options = {
+    #             'save_path': i.save_path,
+    #             'filename': i.filename,
+    #             'archive': os.path.join(path_data, 'db', package_name, '%d.txt' % i.id)
+    #         }
+    #         LogicQueue.add_queue(i.url, options)
 
-        for i in ModelScheduler.get_list():
-            if i.is_live:
-                continue
-            logger.debug('scheduler download %s', i.url)
-            info_dict = APIYoutubeDL.info_dict(package_name, i.url)['info_dict']
-            if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
-                continue
-            ModelScheduler.find(i.id).update(len(info_dict['entries']))
-            options = {
-                'save_path': i.save_path,
-                'filename': i.filename,
-                'archive': os.path.join(path_data, 'db', package_name, '%d.txt' % i.id)
-            }
-            LogicQueue.add_queue(i.url, options)
+    # @staticmethod
+    # def analysis(url):
+    #     return APIYoutubeDL.info_dict(package_name, url)
 
-    @staticmethod
-    def analysis(url):
-        return APIYoutubeDL.info_dict(package_name, url)
-
-    @staticmethod
-    def download(form):
-        from .logic_queue import LogicQueue
-
-        options = {
-            'save_path': form['save_path'],
-            'filename': form['filename'],
-            'archive': None
-        }
-        for i in form.getlist('download[]'):
-            LogicQueue.add_queue(i, options)
-        return len(form.getlist('download[]'))
+    # @staticmethod
+    # def download(form):
+    #     from .logic_queue import LogicQueue
+    #
+    #     options = {
+    #         'save_path': form['save_path'],
+    #         'filename': form['filename'],
+    #         'archive': None
+    #     }
+    #     for i in form.getlist('download[]'):
+    #         LogicQueue.add_queue(i, options)
+    #     return len(form.getlist('download[]'))
 
     @staticmethod
     def get_scheduler():
@@ -121,15 +123,15 @@ class LogicNormal(object):
     def del_scheduler(db_id):
         logger.debug('del_scheduler %s', db_id)
         ModelScheduler.find(db_id).delete()
-        LogicNormal.del_archive(db_id)
+        # LogicNormal.del_archive(db_id)
         return LogicNormal.get_scheduler()
 
-    @staticmethod
-    def del_archive(db_id):
-        archive = os.path.join(path_data, 'db', package_name, '%s.txt' % db_id)
-        logger.debug('delete %s', archive)
-        if os.path.isfile(archive):
-            os.remove(archive)
+    # @staticmethod
+    # def del_archive(db_id):
+    #     archive = os.path.join(path_data, 'db', package_name, '%s.txt' % db_id)
+    #     logger.debug('delete %s', archive)
+    #     if os.path.isfile(archive):
+    #         os.remove(archive)
 
     @staticmethod
     def get_first_live_video(channel_url):

@@ -47,9 +47,9 @@ class Logic(object):
             Logic.db_init()  # DB 초기화
 
             # archive 파일 저장 폴더 생성
-            path = os.path.join(path_data, 'db', package_name)
-            if not os.path.isdir(path):
-                os.makedirs(path)
+            # path = os.path.join(path_data, 'db', package_name)
+            # if not os.path.isdir(path):
+            #     os.makedirs(path)
 
             if ModelSetting.get_bool('auto_start'):
                 Logic.scheduler_start()
@@ -119,13 +119,13 @@ class Logic(object):
             ret = 'fail'
         return ret
 
-    @staticmethod
-    def reset_db():
-        try:
-            db.session.query(ModelQueue).delete()
-            db.session.commit()
-            return True
-        except Exception as e:
-            logger.error('Exception:%s', e)
-            logger.error(traceback.format_exc())
-            return False
+    # @staticmethod
+    # def reset_db():
+    #     try:
+    #         db.session.query(ModelQueue).delete()
+    #         db.session.commit()
+    #         return True
+    #     except Exception as e:
+    #         logger.error('Exception:%s', e)
+    #         logger.error(traceback.format_exc())
+    #         return False
