@@ -46,41 +46,41 @@ class LogicNormal(object):
         if status['status'] == 'ERROR':
             LogicNormal.download_list.remove(url)
 
-    @staticmethod
-    def scheduler_function2():
-        from .logic_queue import LogicQueue
+    # @staticmethod
+    # def scheduler_function2():
+    #     from .logic_queue import LogicQueue
+    #
+    #     for i in ModelScheduler.get_list():
+    #         if i.is_live:
+    #             continue
+    #         logger.debug('scheduler download %s', i.url)
+    #         info_dict = APIYoutubeDL.info_dict(package_name, i.url)['info_dict']
+    #         if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
+    #             continue
+    #         ModelScheduler.find(i.id).update(len(info_dict['entries']))
+    #         options = {
+    #             'save_path': i.save_path,
+    #             'filename': i.filename,
+    #             'archive': os.path.join(path_data, 'db', package_name, '%d.txt' % i.id)
+    #         }
+    #         LogicQueue.add_queue(i.url, options)
 
-        for i in ModelScheduler.get_list():
-            if i.is_live:
-                continue
-            logger.debug('scheduler download %s', i.url)
-            info_dict = APIYoutubeDL.info_dict(package_name, i.url)['info_dict']
-            if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
-                continue
-            ModelScheduler.find(i.id).update(len(info_dict['entries']))
-            options = {
-                'save_path': i.save_path,
-                'filename': i.filename,
-                'archive': os.path.join(path_data, 'db', package_name, '%d.txt' % i.id)
-            }
-            LogicQueue.add_queue(i.url, options)
+    # @staticmethod
+    # def analysis(url):
+    #     return APIYoutubeDL.info_dict(package_name, url)
 
-    @staticmethod
-    def analysis(url):
-        return APIYoutubeDL.info_dict(package_name, url)
-
-    @staticmethod
-    def download(form):
-        from .logic_queue import LogicQueue
-
-        options = {
-            'save_path': form['save_path'],
-            'filename': form['filename'],
-            'archive': None
-        }
-        for i in form.getlist('download[]'):
-            LogicQueue.add_queue(i, options)
-        return len(form.getlist('download[]'))
+    # @staticmethod
+    # def download(form):
+    #     from .logic_queue import LogicQueue
+    #
+    #     options = {
+    #         'save_path': form['save_path'],
+    #         'filename': form['filename'],
+    #         'archive': None
+    #     }
+    #     for i in form.getlist('download[]'):
+    #         LogicQueue.add_queue(i, options)
+    #     return len(form.getlist('download[]'))
 
     @staticmethod
     def get_scheduler():
@@ -121,15 +121,15 @@ class LogicNormal(object):
     def del_scheduler(db_id):
         logger.debug('del_scheduler %s', db_id)
         ModelScheduler.find(db_id).delete()
-        LogicNormal.del_archive(db_id)
+        # LogicNormal.del_archive(db_id)
         return LogicNormal.get_scheduler()
 
-    @staticmethod
-    def del_archive(db_id):
-        archive = os.path.join(path_data, 'db', package_name, '%s.txt' % db_id)
-        logger.debug('delete %s', archive)
-        if os.path.isfile(archive):
-            os.remove(archive)
+    # @staticmethod
+    # def del_archive(db_id):
+    #     archive = os.path.join(path_data, 'db', package_name, '%s.txt' % db_id)
+    #     logger.debug('delete %s', archive)
+    #     if os.path.isfile(archive):
+    #         os.remove(archive)
 
     @staticmethod
     def get_first_live_video(channel_url):

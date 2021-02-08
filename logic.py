@@ -119,13 +119,13 @@ class Logic(object):
             ret = 'fail'
         return ret
 
-    @staticmethod
-    def reset_db():
-        try:
-            db.session.query(ModelQueue).delete()
-            db.session.commit()
-            return True
-        except Exception as e:
-            logger.error('Exception:%s', e)
-            logger.error(traceback.format_exc())
-            return False
+    # @staticmethod
+    # def reset_db():
+    #     try:
+    #         db.session.query(ModelQueue).delete()
+    #         db.session.commit()
+    #         return True
+    #     except Exception as e:
+    #         logger.error('Exception:%s', e)
+    #         logger.error(traceback.format_exc())
+    #         return False
