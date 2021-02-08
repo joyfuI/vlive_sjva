@@ -23,19 +23,21 @@ class LogicNormal(object):
 
     @staticmethod
     def scheduler_function():
-        for i in ModelScheduler.get_list():
-            if not i.is_live:
+        for scheduler in ModelScheduler.get_list():
+            if not scheduler.is_live:
                 continue
-            logger.debug('scheduler download %s', i.url)
-            video_url = LogicNormal.get_first_live_video(i.url)  # 첫번째 영상
+            logger.debug('scheduler download %s', scheduler.url)
+            video_url = LogicNormal.get_first_live_video(scheduler.url)  # 첫번째 영상
             if video_url is None or video_url in LogicNormal.download_list:
                 continue
-            ModelScheduler.find(i.id).update(LogicNormal.get_count_video(i.url))  # 임시
-            download = APIYoutubeDL.download(package_name, i.key, video_url, filename=i.filename, save_path=i.save_path,
-                                             start=True)
+            download = APIYoutubeDL.download(package_name, scheduler.key, video_url, filename=scheduler.filename,
+                                             save_path=scheduler.save_path, start=True)
+            scheduler.update(LogicNormal.get_count_video(scheduler.url))  # 임시
             if download['errorCode'] == 0:
                 LogicNormal.download_list.add(video_url)
-                Thread(target=LogicNormal.download_check_function, args=(video_url, download['index'], i.key)).start()
+                Thread(target=LogicNormal.download_check_function,
+                       args=(video_url, download['index'], scheduler.key)).start()
+                scheduler.update()
             else:
                 logger.debug('scheduler download fail %s', download['errorCode'])
 
