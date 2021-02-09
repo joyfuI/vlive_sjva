@@ -107,8 +107,8 @@
         schedule_modal_save_btn.addEventListener('click', (event) => {
             event.preventDefault();
             const url = document.getElementById('url').value;
-            if (!url.startsWith('http')) {
-                notify('URL을 입력하세요.', 'warning');
+            if (url.search(/https?:\/\/www\.vlive\.tv\/channel\/\w+/) === -1) {
+                notify('V LIVE 채널 URL을 입력하세요.', 'warning');
                 return;
             }
             fetch(`/${package_name}/ajax/add_scheduler`, {
@@ -120,7 +120,7 @@
                 body: get_formdata('#modal_form')
             }).then(response => response.json()).then((data) => {
                 if (data === null) {
-                    notify('플레이리스트가 아닙니다.', 'warning');
+                    notify('V LIVE 채널을 분석하지 못했습니다.', 'warning');
                     return;
                 }
                 make_list(data);
