@@ -34,7 +34,7 @@ menu = {
 }
 
 plugin_info = {
-    'version': '0.1.4',
+    'version': '0.1.5',
     'name': 'vlive',
     'category_name': 'vod',
     'developer': 'joyfuI',
@@ -97,7 +97,7 @@ def ajax(sub):
         elif sub == 'scheduler':
             go = request.form['scheduler']
             logger.debug('scheduler:%s', go)
-            if go:
+            if go == 'true':
                 Logic.scheduler_start()
             else:
                 Logic.scheduler_stop()
