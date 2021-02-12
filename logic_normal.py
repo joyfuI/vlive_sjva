@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#########################################################
 # python
 import os
 import re
@@ -16,7 +15,7 @@ from framework import path_data
 from .plugin import logger, package_name
 from .model import ModelScheduler
 from .api_youtube_dl import APIYoutubeDL
-#########################################################
+
 
 class LogicNormal(object):
     download_list = set()

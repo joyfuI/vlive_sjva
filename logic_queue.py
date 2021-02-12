@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#########################################################
 # python
 import os
 import time
@@ -15,7 +14,7 @@ from .plugin import package_name, logger
 from .model import ModelScheduler, ModelQueue
 from .logic_normal import LogicNormal
 from .api_youtube_dl import APIYoutubeDL
-#########################################################
+
 
 class LogicQueue(object):
     __thread = None
