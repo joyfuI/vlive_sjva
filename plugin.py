@@ -1,23 +1,19 @@
-# -*- coding: utf-8 -*-
-# python
 import os
 import traceback
 
-# third-party
 from flask import Blueprint, request, render_template, redirect, jsonify
 from flask_login import login_required
 
-# sjva 공용
-from framework.logger import get_logger
 from framework import scheduler, socketio
+from framework.logger import get_logger
 
-# 패키지
-package_name = __name__.split('.')[0]
-logger = get_logger(package_name)
 from .logic import Logic
 from .logic_normal import LogicNormal
-from .logic_queue import LogicQueue
+# from .logic_queue import LogicQueue
 from .model import ModelSetting
+
+package_name = __name__.split('.')[0]
+logger = get_logger(package_name)
 
 #########################################################
 # 플러그인 공용
@@ -35,7 +31,7 @@ menu = {
 }
 
 plugin_info = {
-    'version': '0.1.5',
+    'version': '1.0.0',
     'name': 'vlive',
     'category_name': 'vod',
     'developer': 'joyfuI',
