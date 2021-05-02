@@ -1,22 +1,18 @@
-# -*- coding: utf-8 -*-
-#########################################################
-# python
 import os
 import re
 import time
 from threading import Thread
 
-# third-party
 import requests
 
-# sjva 공용
-from framework import path_data
+from framework.logger import get_logger
 
-# 패키지
-from .plugin import logger, package_name
 from .model import ModelScheduler
 from .api_youtube_dl import APIYoutubeDL
-#########################################################
+
+package_name = __name__.split('.')[0]
+logger = get_logger(package_name)
+
 
 class LogicNormal(object):
     download_list = set()
@@ -50,8 +46,6 @@ class LogicNormal(object):
 
     # @staticmethod
     # def scheduler_function2():
-    #     from .logic_queue import LogicQueue
-    #
     #     for i in ModelScheduler.get_list():
     #         if i.is_live:
     #             continue
@@ -73,8 +67,6 @@ class LogicNormal(object):
 
     # @staticmethod
     # def download(form):
-    #     from .logic_queue import LogicQueue
-    #
     #     options = {
     #         'save_path': form['save_path'],
     #         'filename': form['filename'],

@@ -1,23 +1,19 @@
-# -*- coding: utf-8 -*-
-#########################################################
-# python
 import os
 import traceback
 import time
-import threading
+from threading import Thread
 
-# third-party
-
-# sjva 공용
 from framework import db, scheduler, path_data
+from framework.logger import get_logger
 from framework.job import Job
 from framework.util import Util
 
-# 패키지
-from .plugin import logger, package_name
-from .model import ModelSetting, ModelQueue
 from .logic_normal import LogicNormal
-#########################################################
+from .model import ModelSetting
+
+package_name = __name__.split('.')[0]
+logger = get_logger(package_name)
+
 
 class Logic(object):
     db_default = {
@@ -74,7 +70,7 @@ class Logic(object):
         try:
             logger.debug('%s scheduler_start', package_name)
             interval = ModelSetting.get('interval')
-            job = Job(package_name, package_name, interval, Logic.scheduler_function, u"V LIVE 새로운 영상 다운로드", False)
+            job = Job(package_name, package_name, interval, Logic.scheduler_function, 'V LIVE 새로운 영상 다운로드', False)
             scheduler.add_job_instance(job)
         except Exception as e:
             logger.error('Exception:%s', e)
@@ -111,7 +107,7 @@ class Logic(object):
                     time.sleep(2)
                     Logic.scheduler_function()
 
-                threading.Thread(target=func, args=()).start()
+                Thread(target=func, args=()).start()
                 ret = 'thread'
         except Exception as e:
             logger.error('Exception:%s', e)
