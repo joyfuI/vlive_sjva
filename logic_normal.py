@@ -133,7 +133,8 @@ class LogicNormal(object):
             'appId': '8c6cc7b45d2568fb668be6e05b6e5a3b',
             'fields': 'contentType,officialVideo,title,url',
             'gcc': 'KR',
-            'locale': 'ko_KR'
+            'locale': 'ko_KR',
+            'pageSize': 5
         }
         headers = {
             'Referer': 'https://www.vlive.tv/'
@@ -144,7 +145,7 @@ class LogicNormal(object):
             if data['contentType'] == 'VIDEO':
                 if data['officialVideo']['type'] == 'LIVE':
                     video_url = data['url']
-                break
+                    break
         return video_url
 
     @staticmethod
