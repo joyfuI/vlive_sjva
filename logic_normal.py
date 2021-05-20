@@ -8,6 +8,7 @@ import requests
 from framework.logger import get_logger
 
 from .model import ModelScheduler
+from .logic_queue import LogicQueue
 from .api_youtube_dl import APIYoutubeDL
 
 package_name = __name__.split('.')[0]
@@ -44,46 +45,24 @@ class LogicNormal(object):
         if status['status'] == 'ERROR':
             LogicNormal.download_list.remove(url)
 
-    # @staticmethod
-    # def scheduler_function2():
-    #     for i in ModelScheduler.get_list():
-    #         if i.is_live:
-    #             continue
-    #         logger.debug('scheduler download %s', i.url)
-    #         info_dict = APIYoutubeDL.info_dict(package_name, i.url)['info_dict']
-    #         if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
-    #             continue
-    #         ModelScheduler.find(i.id).update(len(info_dict['entries']))
-    #         options = {
-    #             'save_path': i.save_path,
-    #             'filename': i.filename,
-    #             'archive': os.path.join(path_data, 'db', package_name, '%d.txt' % i.id)
-    #         }
-    #         LogicQueue.add_queue(i.url, options)
-
-    # @staticmethod
-    # def analysis(url):
-    #     return APIYoutubeDL.info_dict(package_name, url)
-
-    # @staticmethod
-    # def download(form):
-    #     options = {
-    #         'save_path': form['save_path'],
-    #         'filename': form['filename'],
-    #         'archive': None
-    #     }
-    #     for i in form.getlist('download[]'):
-    #         LogicQueue.add_queue(i, options)
-    #     return len(form.getlist('download[]'))
+    @staticmethod
+    def download(form):
+        options = {
+            'save_path': form['save_path'],
+            'filename': form['filename'],
+        }
+        for i in form.getlist('download[]'):
+            LogicQueue.add_queue(i, options)
+        return len(form.getlist('download[]'))
 
     @staticmethod
     def get_scheduler():
-        ret = []
+        scheduler_list = []
         for i in ModelScheduler.get_list(True):
             i['last_time'] = i['last_time'].strftime('%m-%d %H:%M:%S')
             i['path'] = os.path.join(i['save_path'], i['filename'])
-            ret.append(i)
-        return ret
+            scheduler_list.append(i)
+        return scheduler_list
 
     @staticmethod
     def add_scheduler(form):
@@ -96,13 +75,13 @@ class LogicNormal(object):
             }
             ModelScheduler.find(form['db_id']).update(data)
         else:
-            ret = APIYoutubeDL.info_dict(package_name, form['url'])['info_dict']
-            if ret is None or ret.get('extractor_key') != 'VLiveChannel':
+            info_dict = APIYoutubeDL.info_dict(package_name, form['url'])['info_dict']
+            if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
                 return None
             data = {
-                'webpage_url': ret['webpage_url'],
-                'title': ret['title'],
-                'count': len(ret['entries']),
+                'webpage_url': info_dict['webpage_url'],
+                'title': info_dict['title'],
+                'count': len(info_dict['entries']),
                 'save_path': form['save_path'],
                 'filename': form['filename'],
                 'is_live': True
@@ -115,15 +94,7 @@ class LogicNormal(object):
     def del_scheduler(db_id):
         logger.debug('del_scheduler %s', db_id)
         ModelScheduler.find(db_id).delete()
-        # LogicNormal.del_archive(db_id)
         return LogicNormal.get_scheduler()
-
-    # @staticmethod
-    # def del_archive(db_id):
-    #     archive = os.path.join(path_data, 'db', package_name, '%s.txt' % db_id)
-    #     logger.debug('delete %s', archive)
-    #     if os.path.isfile(archive):
-    #         os.remove(archive)
 
     @staticmethod
     def get_first_live_video(channel_url):
@@ -153,3 +124,20 @@ class LogicNormal(object):
         html = requests.get(channel_url).text
         pattern = re.compile(r'"videoCountOfStar":(\d+)')
         return int(pattern.findall(html)[0])
+
+    @staticmethod
+    def get_recent_html():
+        url = 'https://www.vlive.tv/home/video/more'
+        params = {
+            'viewType': 'recent',
+            'pageSize': 20,
+            'pageNo': 1,
+        }
+        headers = {
+            'Accept-Language': 'ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3'
+        }
+        html = requests.get(url, params=params, headers=headers).text
+        html = re.sub(r'href="(.+?)"', r'href="https://www.vlive.tv\1"', html)
+        html = re.sub(r'onclick="vlive.tv.common.videoGa\(this\);"', r'onclick="link_click(this); return false;"', html)
+        html = re.sub(r'onclick="vlive.tv.common.chGa\(this\);"|onerror="(.+?)"', '', html)
+        return html

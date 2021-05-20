@@ -1,0 +1,169 @@
+.video_list {
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+}
+
+.video_list li {
+    display: inline-block;
+    position: relative;
+    width: 228px;
+    min-height: 193px;
+    margin-left: 14px;
+    padding-bottom: 31px;
+    vertical-align: top;
+}
+
+.video_list .thumb_area {
+    float: left;
+    position: relative;
+    width: 228px;
+    height: 128px;
+    margin-bottom: 7px;
+}
+
+.video_list a {
+    text-decoration: none;
+}
+
+.video_list .icon_box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    padding: 8px;
+    font-size: 0;
+}
+
+.video_list .icon_box::after {
+    content: '';
+    display: inline-block;
+    vertical-align: bottom;
+    height: 100%;
+}
+
+.video_list .icon_box span[class^="icon_"]:first-child {
+    margin-left: 0;
+}
+
+.video_list .icon_box span[class^="icon_"] {
+    z-index: 10;
+}
+
+.video_list .icon_box .icon_live {
+    background-color: #f41970;
+}
+
+.video_list .icon_box .icon_live,
+.video_list .icon_box .icon_upcoming,
+.video_list .icon_box .icon_replay {
+    display: inline-block;
+    position: relative;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 3px;
+    vertical-align: bottom;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: normal;
+    color: #fff;
+}
+
+.video_list .icon_box .time {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 10;
+    min-width: 40px;
+    height: 17px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.video_list .thumb_border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    border: 1px solid #000;
+    opacity: .1;
+}
+
+.video_list .video_tit {
+    display: block;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 38px;
+    padding: 4px 0 0 2px;
+    font-size: 13px;
+    line-height: 18px;
+    color: #000;
+    word-break: break-all;
+}
+
+.video_list .video_date {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 5px 0 0 2px;
+    font-size: 12px;
+    color: #999;
+}
+
+.video_list .name {
+    font-weight: normal;
+    color: #999;
+}
+
+.video_list .video_info {
+    padding-top: 8px;
+    margin-left: 3px;
+    font-size: 0;
+    color: #737373;
+}
+
+.video_list .video_info span {
+    font-size: 12px;
+    line-height: 13px;
+}
+
+.video_list .video_info .ico {
+    display: inline-block;
+    vertical-align: top;
+    background: url(https://ssl.pstatic.net/static/m/vlive/pc/2018/03/07/sp_vlive.png) no-repeat 0 0;
+    height: 14px;
+    margin-right: 6px;
+}
+
+.video_list .video_info .ico_play {
+    width: 10px;
+    background-position: -110px -415px;
+}
+
+.video_list .video_info .ico_like {
+    width: 14px;
+    margin-left: 10px;
+    margin-right: 4px;
+    background-position: -150px -415px;
+}
+
+.video_list .blind {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}

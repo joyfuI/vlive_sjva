@@ -49,27 +49,21 @@ list_div.addEventListener('click', (event) => {
         url.disabled = true;
         save_path.value = current_data[index].save_path;
         filename.value = current_data[index].filename;
-        $('#is_live').bootstrapToggle((current_data[index].is_live) ? "on" : "off");
-        $("#schedule_modal").modal();
+        $('#is_live').bootstrapToggle((current_data[index].is_live) ? 'on' : 'off');
+        $('#schedule_modal').modal();
     } else if (target.classList.contains('vlive-del')) {
         // 스케줄 삭제
         confirm_title.textContent = '스케줄 삭제';
         confirm_body.textContent = '해당 스케줄을 삭제하시겠습니까?';
         $('#confirm_button').off('click').click(index, del_scheduler);
-        $("#confirm_modal").modal();
-    } else if (target.classList.contains('vlive-archive')) {
-        // Archive 삭제
-        // confirm_title.textContent = 'Archive 삭제';
-        // confirm_body.innerHTML = 'Archive 파일을 삭제하시겠습니까?<br>Archive 파일은 중복 다운로드를 막기 위해 이미 다운로드한 동영상 정보를 기록한 파일입니다. 삭제 시 플레이리스트 전체를 처음부터 다운로드합니다.';
-        // $('#confirm_button').off('click').click(index, del_archive);
-        // $('#confirm_modal').modal();
+        $('#confirm_modal').modal();
     }
 });
 
 // 스케줄 저장
 schedule_modal_save_btn.addEventListener('click', (event) => {
     event.preventDefault();
-    $("#schedule_modal").modal('hide');
+    $('#schedule_modal').modal('hide');
     if (url.value.search(/https?:\/\/www\.vlive\.tv\/channel\/\w+/u) === -1) {
         notify('V LIVE 채널 URL을 입력하세요.', 'warning');
         return;
@@ -122,7 +116,6 @@ function make_item(data) {
     tmp += `마지막 실행: ${data.last_time}<br><br>`;
     let tmp2 = `<button class="btn btn-sm btn-outline-success vlive-edit" data-id="${data.id}">스케줄 수정</button>`;
     tmp2 += `<button class="btn btn-sm btn-outline-success vlive-del" data-id="${data.id}">스케줄 삭제</button>`;
-    // tmp2 += `<button class="btn btn-sm btn-outline-success vlive-archive" data-id="${data.id}">Archive 삭제</button>`;
     tmp += m_button_group(tmp2);
     str += m_col(4, tmp);
 
@@ -150,22 +143,3 @@ function del_scheduler(event) {
         notify('실패하였습니다.', 'danger');
     });
 }
-
-// Archive 삭제
-// function del_archive(event) {
-//     event.preventDefault();
-//     fetch(`/${package_name}/ajax/del_archive`, {
-//         method: 'POST',
-//         cache: 'no-cache',
-//         headers: {
-//             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-//         },
-//         body: new URLSearchParams({
-//             id: event.data
-//         })
-//     }).then(response => response.json()).then((data) => {
-//         notify('삭제하였습니다.', 'success');
-//     }).catch(() => {
-//         notify('실패하였습니다.', 'danger');
-//     });
-// }

@@ -9,7 +9,7 @@ from framework.logger import get_logger
 
 from .logic import Logic
 from .logic_normal import LogicNormal
-# from .logic_queue import LogicQueue
+from .logic_queue import LogicQueue
 from .model import ModelSetting
 
 package_name = __name__.split('.')[0]
@@ -25,13 +25,13 @@ blueprint = Blueprint(package_name, package_name, url_prefix='/%s' % package_nam
 menu = {
     'main': [package_name, 'V LIVE'],
     'sub': [
-        ['setting', '설정'], ['scheduler', '스케줄링'], ['log', '로그']
+        ['setting', '설정'], ['recent', '최근 방송'], ['scheduler', '스케줄링'], ['log', '로그']
     ],
     'category': 'vod'
 }
 
 plugin_info = {
-    'version': '1.0.1',
+    'version': '1.1.0',
     'name': 'vlive',
     'category_name': 'vod',
     'developer': 'joyfuI',
@@ -43,7 +43,7 @@ plugin_info = {
 
 def plugin_load():
     Logic.plugin_load()
-    # LogicQueue.queue_load()
+    LogicQueue.queue_load()
 
 
 def plugin_unload():
@@ -55,7 +55,7 @@ def plugin_unload():
 #########################################################
 @blueprint.route('/')
 def home():
-    return redirect('/%s/scheduler' % package_name)
+    return redirect('/%s/recent' % package_name)
 
 
 @blueprint.route('/<sub>')
@@ -71,6 +71,12 @@ def first_menu(sub):
             arg.update(ModelSetting.to_dict())
             arg['scheduler'] = str(scheduler.is_include(package_name))
             arg['is_running'] = str(scheduler.is_running(package_name))
+            return render_template('%s_%s.html' % (package_name, sub), arg=arg)
+
+        elif sub == 'recent':
+            arg['recent_html'] = LogicNormal.get_recent_html()
+            arg['save_path'] = ModelSetting.get('default_save_path')
+            arg['filename'] = ModelSetting.get('default_filename')
             return render_template('%s_%s.html' % (package_name, sub), arg=arg)
 
         elif sub == 'scheduler':
@@ -112,19 +118,14 @@ def ajax(sub):
             ret = Logic.one_execute()
             return jsonify(ret)
 
-        # elif sub == 'reset_db':
-        #     ret = Logic.reset_db()
-        #     return jsonify(ret)
+        elif sub == 'reset_db':
+            ret = Logic.reset_db()
+            return jsonify(ret)
 
         # UI 요청
-        # elif sub == 'analysis':
-        #     url = request.form['url']
-        #     ret = LogicNormal.analysis(url)
-        #     return jsonify(ret)
-
-        # elif sub == 'add_download':
-        #     ret = LogicNormal.download(request.form)
-        #     return jsonify(ret)
+        elif sub == 'add_download':
+            ret = LogicNormal.download(request.form)
+            return jsonify(ret)
 
         elif sub == 'list_scheduler':
             ret = LogicNormal.get_scheduler()
@@ -137,10 +138,6 @@ def ajax(sub):
         elif sub == 'del_scheduler':
             ret = LogicNormal.del_scheduler(request.form['id'])
             return jsonify(ret)
-
-        # elif sub == 'del_archive':
-        #     LogicNormal.del_archive(request.form['id'])
-        #     return jsonify([])
     except Exception as e:
         logger.error('Exception:%s', e)
         logger.error(traceback.format_exc())
