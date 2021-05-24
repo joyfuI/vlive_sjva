@@ -4,7 +4,7 @@ import traceback
 from flask import Blueprint, request, render_template, redirect, jsonify
 from flask_login import login_required
 
-from framework import scheduler, socketio
+from framework import scheduler, socketio, path_data
 from framework.logger import get_logger
 
 from .logic import Logic
@@ -71,6 +71,7 @@ def first_menu(sub):
             arg.update(ModelSetting.to_dict())
             arg['scheduler'] = str(scheduler.is_include(package_name))
             arg['is_running'] = str(scheduler.is_running(package_name))
+            arg['path_data'] = path_data
             return render_template('%s_%s.html' % (package_name, sub), arg=arg)
 
         elif sub == 'recent':

@@ -4,7 +4,7 @@ from threading import Thread
 
 from framework.logger import get_logger
 
-from .model import ModelQueue
+from .model import ModelSetting, ModelQueue
 from .api_youtube_dl import APIYoutubeDL
 
 package_name = __name__.split('.')[0]
@@ -25,7 +25,7 @@ class LogicQueue(object):
             for i in ModelQueue.get_list():
                 logger.debug('queue add %s', i.url)
                 download = APIYoutubeDL.download(package_name, i.key, i.url, filename=i.filename, save_path=i.save_path,
-                                                 start=False)
+                                                 start=False, cookiefile=ModelSetting.get('cookiefile_path'))
                 if download['errorCode'] == 0:
                     i.set_index(download['index'])
                 else:
@@ -65,7 +65,8 @@ class LogicQueue(object):
             options['webpage_url'] = url
             entity = ModelQueue.create(options)
             download = APIYoutubeDL.download(package_name, entity.key, url, filename=entity.filename,
-                                             save_path=entity.save_path, start=False)
+                                             save_path=entity.save_path, start=False,
+                                             cookiefile=ModelSetting.get('cookiefile_path'))
             if download['errorCode'] == 0:
                 entity.set_index(download['index'])
             else:

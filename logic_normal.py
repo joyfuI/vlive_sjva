@@ -7,7 +7,7 @@ import requests
 
 from framework.logger import get_logger
 
-from .model import ModelScheduler
+from .model import ModelSetting, ModelScheduler
 from .logic_queue import LogicQueue
 from .api_youtube_dl import APIYoutubeDL
 
@@ -28,7 +28,8 @@ class LogicNormal(object):
             if video_url is None or video_url in LogicNormal.download_list:
                 continue
             download = APIYoutubeDL.download(package_name, scheduler.key, video_url, filename=scheduler.filename,
-                                             save_path=scheduler.save_path, start=True)
+                                             save_path=scheduler.save_path, start=True,
+                                             cookiefile=ModelSetting.get('cookiefile_path'))
             scheduler.update(LogicNormal.get_count_video(scheduler.url))  # 임시
             if download['errorCode'] == 0:
                 LogicNormal.download_list.add(video_url)
