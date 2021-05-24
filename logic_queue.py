@@ -1,12 +1,10 @@
-import os
 import traceback
 import time
 from threading import Thread
 
 from framework.logger import get_logger
 
-from .logic_normal import LogicNormal
-from .model import ModelScheduler, ModelQueue
+from .model import ModelSetting, ModelQueue
 from .api_youtube_dl import APIYoutubeDL
 
 package_name = __name__.split('.')[0]
@@ -26,15 +24,12 @@ class LogicQueue(object):
             time.sleep(10)  # youtube-dl 플러그인이 언제 로드될지 모르니 일단 10초 대기
             for i in ModelQueue.get_list():
                 logger.debug('queue add %s', i.url)
-                if i.archive:
-                    scheduler_id = os.path.splitext(os.path.basename(i.archive))[0]
-                    LogicNormal.download_list[scheduler_id] = None
-                ret = APIYoutubeDL.download(package_name, i.key, i.url, filename=i.filename, save_path=i.save_path,
-                                            archive=i.archive, start=False)
-                if ret['errorCode'] == 0:
-                    i.set_index(ret['index'])
+                download = APIYoutubeDL.download(package_name, i.key, i.url, filename=i.filename, save_path=i.save_path,
+                                                 start=False, cookiefile=ModelSetting.get('cookiefile_path'))
+                if download['errorCode'] == 0:
+                    i.set_index(download['index'])
                 else:
-                    logger.debug('queue add fail %s', ret['errorCode'])
+                    logger.debug('queue add fail %s', download['errorCode'])
                     i.delete()
 
             LogicQueue.__thread = Thread(target=LogicQueue.thread_function)
@@ -50,23 +45,15 @@ class LogicQueue(object):
             while not ModelQueue.is_empty():
                 entity = ModelQueue.peek()
                 logger.debug('queue download %s', entity.url)
-                ret = APIYoutubeDL.start(package_name, entity.index, entity.key)
-                if ret['errorCode'] == 0:
+                start = APIYoutubeDL.start(package_name, entity.index, entity.key)
+                if start['errorCode'] == 0:
                     while True:
                         time.sleep(10)  # 10초 대기
-                        ret = APIYoutubeDL.status(package_name, entity.index, entity.key)
-                        if ret['status'] == 'COMPLETED':
-                            if entity.archive:
-                                scheduler_id = os.path.splitext(os.path.basename(entity.archive))[0]
-                                ModelScheduler.find(scheduler_id).update()
-                            break
-                        elif ret['status'] in ('ERROR', 'STOP'):
+                        status = APIYoutubeDL.status(package_name, entity.index, entity.key)
+                        if status['status'] in ('COMPLETED', 'ERROR', 'STOP'):
                             break
                 else:
-                    logger.debug('queue download fail %s', ret['errorCode'])
-                if entity.archive:
-                    scheduler_id = os.path.splitext(os.path.basename(entity.archive))[0]
-                    del LogicNormal.download_list[scheduler_id]
+                    logger.debug('queue download fail %s', start['errorCode'])
                 entity.delete()
         except Exception as e:
             logger.error('Exception:%s', e)
@@ -77,15 +64,13 @@ class LogicQueue(object):
         try:
             options['webpage_url'] = url
             entity = ModelQueue.create(options)
-            if entity.archive:
-                scheduler_id = os.path.splitext(os.path.basename(entity.archive))[0]
-                LogicNormal.download_list[scheduler_id] = None
-            ret = APIYoutubeDL.download(package_name, entity.key, url, filename=entity.filename,
-                                        save_path=entity.save_path, archive=entity.archive, start=False)
-            if ret['errorCode'] == 0:
-                entity.set_index(ret['index'])
+            download = APIYoutubeDL.download(package_name, entity.key, url, filename=entity.filename,
+                                             save_path=entity.save_path, start=False,
+                                             cookiefile=ModelSetting.get('cookiefile_path'))
+            if download['errorCode'] == 0:
+                entity.set_index(download['index'])
             else:
-                logger.debug('queue add fail %d', ret['errorCode'])
+                logger.debug('queue add fail %s', download['errorCode'])
                 entity.delete()
                 return None
 

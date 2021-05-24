@@ -211,7 +211,6 @@ class ModelQueue(db.Model):
     url = db.Column(db.String, nullable=False)
     save_path = db.Column(db.String, nullable=False)
     filename = db.Column(db.String, nullable=False)
-    archive = db.Column(db.String)
     key = db.Column(db.String)
     index = db.Column(db.Integer)
 
@@ -220,7 +219,6 @@ class ModelQueue(db.Model):
         self.url = data['webpage_url']
         self.save_path = data['save_path']
         self.filename = data['filename']
-        self.archive = data['archive']
         self.key = ''.join([random.choice(string.ascii_lowercase) for _ in range(5)])
         self.index = None
 

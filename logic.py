@@ -8,8 +8,8 @@ from framework.logger import get_logger
 from framework.job import Job
 from framework.util import Util
 
+from .model import ModelSetting, ModelQueue
 from .logic_normal import LogicNormal
-from .model import ModelSetting
 
 package_name = __name__.split('.')[0]
 logger = get_logger(package_name)
@@ -21,7 +21,8 @@ class Logic(object):
         'interval': '* * * * *',
         'auto_start': 'False',
         'default_save_path': os.path.join(path_data, 'download', package_name),
-        'default_filename': '%(title)s.%(id)s.%(ext)s'
+        'default_filename': '%(title)s.%(id)s.%(ext)s',
+        'cookiefile_path': ''
     }
 
     @staticmethod
@@ -41,11 +42,6 @@ class Logic(object):
         try:
             logger.debug('%s plugin_load', package_name)
             Logic.db_init()  # DB 초기화
-
-            # archive 파일 저장 폴더 생성
-            # path = os.path.join(path_data, 'db', package_name)
-            # if not os.path.isdir(path):
-            #     os.makedirs(path)
 
             if ModelSetting.get_bool('auto_start'):
                 Logic.scheduler_start()
@@ -115,13 +111,13 @@ class Logic(object):
             ret = 'fail'
         return ret
 
-    # @staticmethod
-    # def reset_db():
-    #     try:
-    #         db.session.query(ModelQueue).delete()
-    #         db.session.commit()
-    #         return True
-    #     except Exception as e:
-    #         logger.error('Exception:%s', e)
-    #         logger.error(traceback.format_exc())
-    #         return False
+    @staticmethod
+    def reset_db():
+        try:
+            db.session.query(ModelQueue).delete()
+            db.session.commit()
+            return True
+        except Exception as e:
+            logger.error('Exception:%s', e)
+            logger.error(traceback.format_exc())
+            return False
