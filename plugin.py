@@ -75,6 +75,7 @@ def first_menu(sub):
             return render_template('%s_%s.html' % (package_name, sub), arg=arg)
 
         elif sub == 'recent':
+            arg['url'] = request.args.get('url', '')
             arg['recent_html'] = LogicNormal.get_recent_html()
             arg['save_path'] = ModelSetting.get('default_save_path')
             arg['filename'] = ModelSetting.get('default_filename')

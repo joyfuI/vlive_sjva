@@ -3,6 +3,8 @@
 
     <link rel="stylesheet" href="{{ url_for('.static', filename='%s.css' % arg['template_name']) }}">
 
+    {{ macros.setting_input_text_and_buttons('download', 'URL', [['download_btn', '다운로드']], value=arg['url'], placeholder='https://www.vlive.tv/video/ 주소', desc='V LIVE 동영상 주소') }}
+    {{ macros.m_hr() }}
     <ul class="video_list">
         {{ arg['recent_html']|safe }}
     </ul>
@@ -23,7 +25,6 @@
                         {{ macros.setting_input_text('url', 'URL', value='', disabled=True) }}
                         {{ macros.setting_input_text('save_path', '저장 폴더', value=arg['save_path'], placeholder='저장 폴더 경로', desc='템플릿 규칙 사용 불가. 폴더명에 템플릿 규칙을 사용하려면 저장 폴더엔 상위 폴더 경로를 지정하고 파일명에 하위 경로를 추가해주세요.') }}
                         {{ macros.setting_input_text('filename', '파일명', value=arg['filename'], desc='템플릿 규칙은 https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template 참고') }}
-                        {{ macros.setting_checkbox('is_live', 'LIVE만 다운로드', value='True', desc='지원 예정 기능, 현재 LIVE만 다운로드 가능') }}
                     </form>
                 </div>
                 <div class="modal-footer">

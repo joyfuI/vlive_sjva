@@ -1,7 +1,8 @@
 "use strict";
 
+const download = document.getElementById('download');
+const download_btn = document.getElementById('download_btn');
 const url = document.getElementById('url');
-const is_live = document.getElementById('is_live');
 const vlive_modal_save_btn = document.getElementById('vlive_modal_save_btn');
 
 function link_click(el) {
@@ -10,7 +11,16 @@ function link_click(el) {
     $('#vlive_modal').modal();
 }
 
-is_live.disabled = true;
+// 다운로드
+download_btn.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (download.value.search(/https?:\/\/www\.vlive\.tv\/.+/u) === -1) {
+        notify('V LIVE URL을 입력하세요.', 'warning');
+        return;
+    }
+    url.value = download.value;
+    $('#vlive_modal').modal();
+});
 
 // 다운로드 추가
 vlive_modal_save_btn.addEventListener('click', (event) => {
