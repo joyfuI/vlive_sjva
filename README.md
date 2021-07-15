@@ -9,9 +9,9 @@ SJVA에서 "시스템 → 플러그인 → 플러그인 수동 설치" 칸에 �
 `https://github.com/joyfuI/vlive`
 
 ## 잡담
-cookiefile 경로를 지정하면 구매한 유료 영상도 다운로드 할 수 있다고 해서 설정에 해당 기능을 추가했습니다.  
+cookiefile 경로를 지정하면 가입이 필요한 영상도 다운로드 할 수 있습니다.  
 cookiefile 추출 방법은 [여기](https://github.com/ytdl-org/youtube-dl#how-do-i-pass-cookies-to-youtube-dl)를 참고해주세요.  
-제가 유료 영상이 하나 있어서 테스트해봤는데 이건 다운로드 안되네요...
+유료 영상은 안되는 듯...?
 
 ## Changelog
 v1.1.0
