@@ -28,7 +28,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="vlive_modal_save_btn" class="btn btn-primary" type="button">추가</button>
+                    <button id="vlive_modal_save_btn" class="btn btn-primary" type="button" data-dismiss="modal">
+                        추가
+                    </button>
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">닫기</button>
                 </div>
             </div>
@@ -38,6 +40,7 @@
     <script>
         "use strict";
         const package_name = '{{ arg["package_name"] }}';
+        const sub = '{{ arg["sub"] }}';
     </script>
     <script src="{{ url_for('.static', filename='%s.js' % arg['template_name']) }}"></script>
 

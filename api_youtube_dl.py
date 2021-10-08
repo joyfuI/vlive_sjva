@@ -1,4 +1,5 @@
-# 최종 업데이트 20210501
+# 최종 업데이트 20211010
+from typing import Optional
 from datetime import datetime
 
 import requests
@@ -30,19 +31,21 @@ class APIYoutubeDL(object):
     }
 
     @staticmethod
-    def info_dict(plugin, url):
+    def info_dict(plugin: str, url: str) -> dict:
         data = {
             'plugin': plugin,
             'url': url
         }
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        return requests.post('%s/youtube-dl/api/info_dict' % HOST_URL, data=data).json()
+        return requests.post(f'{HOST_URL}/youtube-dl/api/info_dict', data=data).json()
 
     @staticmethod
-    def download(plugin, key, url, filename=None, save_path=None, format_code=None, preferedformat=None,
-                 preferredcodec=None, preferredquality=None, dateafter=None, playlist=None, archive=None, start=None,
-                 cookiefile=None):
+    def download(plugin: str, key: str, url: str, filename: Optional[str] = None, save_path: Optional[str] = None,
+                 format_code: Optional[str] = None, preferedformat: Optional[str] = None,
+                 preferredcodec: Optional[str] = None, preferredquality: Optional[int] = None,
+                 dateafter: Optional[str] = None, playlist: Optional[str] = None, archive: Optional[str] = None,
+                 start: Optional[bool] = None, cookiefile: Optional[str] = None) -> dict:
         data = {
             'plugin': plugin,
             'key': key,
@@ -75,8 +78,10 @@ class APIYoutubeDL(object):
         return requests.post('%s/youtube-dl/api/download' % HOST_URL, data=data).json()
 
     @staticmethod
-    def thumbnail(plugin, key, url, filename=None, save_path=None, all_thumbnails=None, dateafter=None, playlist=None,
-                  archive=None, start=None, cookiefile=None):
+    def thumbnail(plugin: str, key: str, url: str, filename: Optional[str] = None, save_path: Optional[str] = None,
+                  all_thumbnails: Optional[bool] = None, dateafter: Optional[str] = None,
+                  playlist: Optional[str] = None, archive: Optional[str] = None, start: Optional[bool] = None,
+                  cookiefile: Optional[str] = None) -> dict:
         data = {
             'plugin': plugin,
             'key': key,
@@ -103,8 +108,10 @@ class APIYoutubeDL(object):
         return requests.post('%s/youtube-dl/api/thumbnail' % HOST_URL, data=data).json()
 
     @staticmethod
-    def sub(plugin, key, url, filename=None, save_path=None, all_subs=None, sub_lang=None, auto_sub=None,
-            dateafter=None, playlist=None, archive=None, start=None, cookiefile=None):
+    def sub(plugin: str, key: str, url: str, filename: Optional[str] = None, save_path: Optional[str] = None,
+            all_subs: Optional[bool] = None, sub_lang: Optional[str] = None, auto_sub: Optional[bool] = None,
+            dateafter: Optional[str] = None, playlist: Optional[str] = None, archive: Optional[str] = None,
+            start: Optional[bool] = None, cookiefile: Optional[str] = None) -> dict:
         data = {
             'plugin': plugin,
             'key': key,
@@ -135,7 +142,7 @@ class APIYoutubeDL(object):
         return requests.post('%s/youtube-dl/api/sub' % HOST_URL, data=data).json()
 
     @staticmethod
-    def start(plugin, index, key):
+    def start(plugin: str, index: int, key: str) -> dict:
         data = {
             'plugin': plugin,
             'index': index,
@@ -146,7 +153,7 @@ class APIYoutubeDL(object):
         return requests.post('%s/youtube-dl/api/start' % HOST_URL, data=data).json()
 
     @staticmethod
-    def stop(plugin, index, key):
+    def stop(plugin: str, index: int, key: str) -> dict:
         data = {
             'plugin': plugin,
             'index': index,
@@ -157,7 +164,7 @@ class APIYoutubeDL(object):
         return requests.post('%s/youtube-dl/api/stop' % HOST_URL, data=data).json()
 
     @staticmethod
-    def status(plugin, index, key):
+    def status(plugin: str, index: int, key: str) -> dict:
         data = {
             'plugin': plugin,
             'index': index,

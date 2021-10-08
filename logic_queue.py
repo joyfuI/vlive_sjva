@@ -2,13 +2,13 @@ import traceback
 import time
 from threading import Thread
 
-from framework.logger import get_logger
-
-from .model import ModelSetting, ModelQueue
+from .plugin import P
+from .model import ModelQueue
 from .api_youtube_dl import APIYoutubeDL
 
-package_name = __name__.split('.')[0]
-logger = get_logger(package_name)
+logger = P.logger
+package_name = P.package_name
+ModelSetting = P.ModelSetting
 
 
 class LogicQueue(object):
@@ -60,7 +60,7 @@ class LogicQueue(object):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def add_queue(url, options):
+    def add_queue(url: str, options: dict[str, str]):
         try:
             options['webpage_url'] = url
             entity = ModelQueue.create(options)

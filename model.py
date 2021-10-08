@@ -1,115 +1,18 @@
-import os
 import traceback
 import random
 import string
 from datetime import datetime
 
-from framework import app, db, path_data
-from framework.logger import get_logger
-from framework.util import Util
+from framework import db
 
-package_name = __name__.split('.')[0]
-logger = get_logger(package_name)
-app.config['SQLALCHEMY_BINDS'][package_name] = 'sqlite:///%s' % os.path.join(path_data, 'db', '%s.db' % package_name)
+from .plugin import P
 
-
-class ModelSetting(db.Model):
-    __tablename__ = '%s_setting' % package_name
-    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
-    __bind_key__ = package_name
-
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(100), unique=True, nullable=False)
-    value = db.Column(db.String, nullable=False)
-
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def __repr__(self):
-        return repr(self.as_dict())
-
-    def as_dict(self):
-        return {x.name: getattr(self, x.name) for x in self.__table__.columns}
-
-    @staticmethod
-    def get(key):
-        try:
-            return db.session.query(ModelSetting).filter_by(key=key).first().value.strip()
-        except Exception as e:
-            logger.error('Exception:%s %s', e, key)
-            logger.error(traceback.format_exc())
-
-    @staticmethod
-    def get_int(key):
-        try:
-            return int(ModelSetting.get(key))
-        except Exception as e:
-            logger.error('Exception:%s %s', e, key)
-            logger.error(traceback.format_exc())
-
-    @staticmethod
-    def get_bool(key):
-        try:
-            return ModelSetting.get(key) == 'True'
-        except Exception as e:
-            logger.error('Exception:%s %s', e, key)
-            logger.error(traceback.format_exc())
-
-    @staticmethod
-    def set(key, value):
-        try:
-            item = db.session.query(ModelSetting).filter_by(key=key).with_for_update().first()
-            if item is not None:
-                item.value = value.strip()
-                db.session.commit()
-            else:
-                db.session.add(ModelSetting(key, value.strip()))
-        except Exception as e:
-            logger.error('Exception:%s', e)
-            logger.error(traceback.format_exc())
-            logger.error('Error Key:%s Value:%s', key, value)
-
-    @staticmethod
-    def to_dict():
-        try:
-            return Util.db_list_to_dict(db.session.query(ModelSetting).all())
-        except Exception as e:
-            logger.error('Exception:%s', e)
-            logger.error(traceback.format_exc())
-
-    @staticmethod
-    def setting_save(req):
-        try:
-            for key, value in req.form.items():
-                if key in ['scheduler', 'is_running']:
-                    continue
-                if key.startswith('tmp_'):
-                    continue
-                logger.debug('Key:%s Value:%s', key, value)
-                entity = db.session.query(ModelSetting).filter_by(key=key).with_for_update().first()
-                entity.value = value
-            db.session.commit()
-            return True
-        except Exception as e:
-            logger.error('Exception:%s', e)
-            logger.error(traceback.format_exc())
-            return False
-
-    @staticmethod
-    def get_list(key):
-        try:
-            value = ModelSetting.get(key)
-            values = [x.strip().strip() for x in value.replace('\n', '|').split('|')]
-            values = Util.get_list_except_empty(values)
-            return values
-        except Exception as e:
-            logger.error('Exception:%s %s', e, key)
-            logger.error(traceback.format_exc())
+logger = P.logger
+package_name = P.package_name
 
 
 class ModelScheduler(db.Model):
-    __tablename__ = '%s_scheduler' % package_name
+    __tablename__ = f'{package_name}_scheduler'
     __table_args__ = {'mysql_collate': 'utf8_general_ci'}
     __bind_key__ = package_name
 
@@ -136,11 +39,11 @@ class ModelScheduler(db.Model):
     def __repr__(self):
         return repr(self.as_dict())
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         return {x.name: getattr(self, x.name) for x in self.__table__.columns}
 
     @staticmethod
-    def get_list(by_dict=False):
+    def get_list(by_dict: bool = False):
         try:
             tmp = db.session.query(ModelScheduler).all()
             if by_dict:
@@ -151,7 +54,7 @@ class ModelScheduler(db.Model):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def find(db_id):
+    def find(db_id: int):
         try:
             return db.session.query(ModelScheduler).filter_by(id=db_id).first()
         except Exception as e:
@@ -159,7 +62,7 @@ class ModelScheduler(db.Model):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def create(data):
+    def create(data: dict):
         try:
             entity = ModelScheduler(data)
             db.session.add(entity)
@@ -170,7 +73,7 @@ class ModelScheduler(db.Model):
             logger.error(traceback.format_exc())
             return None
 
-    def update(self, data=None):
+    def update(self, data=None) -> bool:
         try:
             if data is None:
                 self.last_time = datetime.now()
@@ -190,7 +93,7 @@ class ModelScheduler(db.Model):
             logger.error(traceback.format_exc())
             return False
 
-    def delete(self):
+    def delete(self) -> bool:
         try:
             db.session.delete(self)
             db.session.commit()
@@ -202,7 +105,7 @@ class ModelScheduler(db.Model):
 
 
 class ModelQueue(db.Model):
-    __tablename__ = '%s_queue' % package_name
+    __tablename__ = f'{package_name}_queue'
     __table_args__ = {'mysql_collate': 'utf8_general_ci'}
     __bind_key__ = package_name
 
@@ -225,11 +128,11 @@ class ModelQueue(db.Model):
     def __repr__(self):
         return repr(self.as_dict())
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         return {x.name: getattr(self, x.name) for x in self.__table__.columns}
 
     @staticmethod
-    def get_list(by_dict=False):
+    def get_list(by_dict: bool = False):
         try:
             tmp = db.session.query(ModelQueue).all()
             if by_dict:
@@ -240,7 +143,7 @@ class ModelQueue(db.Model):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def find(db_id):
+    def find(db_id: int):
         try:
             return db.session.query(ModelQueue).filter_by(id=db_id).first()
         except Exception as e:
@@ -258,7 +161,7 @@ class ModelQueue(db.Model):
         return entity
 
     @staticmethod
-    def is_empty():
+    def is_empty() -> bool:
         try:
             return db.session.query(ModelQueue).count() == 0
         except Exception as e:
@@ -266,7 +169,7 @@ class ModelQueue(db.Model):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def create(data):
+    def create(data: dict):
         try:
             entity = ModelQueue(data)
             db.session.add(entity)
@@ -277,7 +180,7 @@ class ModelQueue(db.Model):
             logger.error(traceback.format_exc())
             return None
 
-    def set_index(self, index):
+    def set_index(self, index: int) -> bool:
         try:
             self.index = index
             db.session.commit()
@@ -287,7 +190,7 @@ class ModelQueue(db.Model):
             logger.error(traceback.format_exc())
             return False
 
-    def delete(self):
+    def delete(self) -> bool:
         try:
             db.session.delete(self)
             db.session.commit()
