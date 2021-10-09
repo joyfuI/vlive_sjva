@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const default_save_path = document.getElementById('default_save_path');
 const default_save_path_btn = document.getElementById('default_save_path_btn');

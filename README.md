@@ -21,6 +21,7 @@ cookiefile 추출 방법은 [여기](https://github.com/ytdl-org/youtube-dl#how-
 v2.0.0
 
 * 최신 플러그인 구조로 변경
+* 스케줄 추가가 안 되는 문제 수정
 
 v1.1.0
 

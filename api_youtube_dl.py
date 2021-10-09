@@ -6,7 +6,7 @@ import requests
 
 from system.model import ModelSetting as SystemModelSetting
 
-HOST_URL = 'http://localhost:%s' % SystemModelSetting.get('port')
+HOST_URL = f"http://localhost:{SystemModelSetting.get('port')}"
 
 
 class APIYoutubeDL(object):
@@ -75,7 +75,7 @@ class APIYoutubeDL(object):
             data['cookiefile'] = cookiefile
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        return requests.post('%s/youtube-dl/api/download' % HOST_URL, data=data).json()
+        return requests.post(f'{HOST_URL}/youtube-dl/api/download', data=data).json()
 
     @staticmethod
     def thumbnail(plugin: str, key: str, url: str, filename: Optional[str] = None, save_path: Optional[str] = None,
@@ -105,7 +105,7 @@ class APIYoutubeDL(object):
             data['cookiefile'] = cookiefile
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        return requests.post('%s/youtube-dl/api/thumbnail' % HOST_URL, data=data).json()
+        return requests.post(f'{HOST_URL}/youtube-dl/api/thumbnail', data=data).json()
 
     @staticmethod
     def sub(plugin: str, key: str, url: str, filename: Optional[str] = None, save_path: Optional[str] = None,
@@ -139,7 +139,7 @@ class APIYoutubeDL(object):
             data['cookiefile'] = cookiefile
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        return requests.post('%s/youtube-dl/api/sub' % HOST_URL, data=data).json()
+        return requests.post(f'{HOST_URL}/youtube-dl/api/sub', data=data).json()
 
     @staticmethod
     def start(plugin: str, index: int, key: str) -> dict:
@@ -150,7 +150,7 @@ class APIYoutubeDL(object):
         }
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        return requests.post('%s/youtube-dl/api/start' % HOST_URL, data=data).json()
+        return requests.post(f'{HOST_URL}/youtube-dl/api/start', data=data).json()
 
     @staticmethod
     def stop(plugin: str, index: int, key: str) -> dict:
@@ -161,7 +161,7 @@ class APIYoutubeDL(object):
         }
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        return requests.post('%s/youtube-dl/api/stop' % HOST_URL, data=data).json()
+        return requests.post(f'{HOST_URL}/youtube-dl/api/stop', data=data).json()
 
     @staticmethod
     def status(plugin: str, index: int, key: str) -> dict:
@@ -172,7 +172,7 @@ class APIYoutubeDL(object):
         }
         if SystemModelSetting.get_bool('auth_use_apikey'):  # APIKEY
             data['apikey'] = SystemModelSetting.get('auth_apikey')
-        res = requests.post('%s/youtube-dl/api/status' % HOST_URL, data=data).json()
+        res = requests.post(f'{HOST_URL}/youtube-dl/api/status', data=data).json()
         if res['start_time']:
             res['start_time'] = datetime.strptime(res['start_time'], '%Y-%m-%dT%H:%M:%S')
         if res['end_time']:

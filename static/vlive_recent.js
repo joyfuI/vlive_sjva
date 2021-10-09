@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const download = document.getElementById('download');
 const download_btn = document.getElementById('download_btn');

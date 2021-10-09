@@ -32,10 +32,10 @@ class LogicMain(LogicModuleBase):
         'cookiefile_path': ''
     }
 
-    def __init__(self, P):
-        super(LogicMain, self).__init__(P, None, scheduler_desc='V LIVE 새로운 영상 다운로드')
+    def __init__(self, p):
+        super(LogicMain, self).__init__(p, None, scheduler_desc='V LIVE 새로운 영상 다운로드')
         self.name = package_name  # 모듈명
-        default_route_socketio(P, self)
+        default_route_socketio(p, self)
 
     def plugin_load(self):
         try:
@@ -140,22 +140,22 @@ class LogicMain(LogicModuleBase):
     @celery.task
     def task():
         try:
-            for scheduler in ModelScheduler.get_list():
-                if not scheduler.is_live:
+            for entity in ModelScheduler.get_list():
+                if not entity.is_live:
                     continue
-                logger.debug('scheduler download %s', scheduler.url)
-                video_url = LogicMain.get_first_live_video(scheduler.url)  # 첫번째 영상
+                logger.debug('scheduler download %s', entity.url)
+                video_url = LogicMain.get_first_live_video(entity.url)  # 첫번째 영상
                 if video_url is None or video_url in LogicMain.download_list:
                     continue
-                download = APIYoutubeDL.download(package_name, scheduler.key, video_url, filename=scheduler.filename,
-                                                 save_path=scheduler.save_path, start=True,
+                download = APIYoutubeDL.download(package_name, entity.key, video_url, filename=entity.filename,
+                                                 save_path=entity.save_path, start=True,
                                                  cookiefile=ModelSetting.get('cookiefile_path'))
-                scheduler.update(LogicMain.get_count_video(scheduler.url))  # 임시
+                entity.update(LogicMain.get_count_video(entity.url))  # 임시
                 if download['errorCode'] == 0:
                     LogicMain.download_list.add(video_url)
                     Thread(target=LogicMain.download_check_function,
-                           args=(video_url, download['index'], scheduler.key)).start()
-                    scheduler.update()
+                           args=(video_url, download['index'], entity.key)).start()
+                    entity.update()
                 else:
                     logger.debug('scheduler download fail %s', download['errorCode'])
         except Exception as e:
@@ -201,13 +201,13 @@ class LogicMain(LogicModuleBase):
             }
             ModelScheduler.find(form['db_id']).update(data)
         else:
-            info_dict = APIYoutubeDL.info_dict(package_name, form['url'])['info_dict']
-            if info_dict is None or info_dict.get('extractor_key') != 'VLiveChannel':
+            info_dict = LogicMain.get_channel_info(form['url'])
+            if info_dict is None:
                 return False
             data = {
                 'webpage_url': info_dict['webpage_url'],
                 'title': info_dict['title'],
-                'count': len(info_dict['entries']),
+                'count': info_dict['count'],
                 'save_path': form['save_path'],
                 'filename': form['filename'],
                 'is_live': True
@@ -222,9 +222,35 @@ class LogicMain(LogicModuleBase):
         ModelScheduler.find(db_id).delete()
 
     @staticmethod
+    def get_channel_info(channel_url: str) -> Optional[dict]:
+        channel_id = channel_url.split('/')[-1]
+        url = f'https://www.vlive.tv/globalv-web/vam-web/member/v1.0/channel-{channel_id}/officialProfiles'
+        params = {
+            'appId': '8c6cc7b45d2568fb668be6e05b6e5a3b',
+            'fields': 'officialName',
+            'types': 'STAR',
+            'gcc': 'KR',
+            'locale': 'ko_KR'
+        }
+        headers = {
+            'Referer': 'https://www.vlive.tv/'
+        }
+        try:
+            json = requests.get(url, params=params, headers=headers).json()[0]
+        except (IndexError, KeyError):
+            # 잘못된 channel_id 등의 이유로 엉뚱한 값이 반환되면
+            return None
+        channel_info = {
+            'webpage_url': f'https://www.vlive.tv/channel/{channel_id}',
+            'title': json['officialName'],
+            'count': LogicMain.get_count_video(channel_url),
+        }
+        return channel_info
+
+    @staticmethod
     def get_first_live_video(channel_url: str) -> Optional[str]:
         channel_id = channel_url.split('/')[-1]
-        url = 'https://www.vlive.tv/globalv-web/vam-web/post/v1.0/channel-%s/starPosts' % channel_id
+        url = f'https://www.vlive.tv/globalv-web/vam-web/post/v1.0/channel-{channel_id}/starPosts'
         params = {
             'appId': '8c6cc7b45d2568fb668be6e05b6e5a3b',
             'fields': 'contentType,officialVideo,title,url',

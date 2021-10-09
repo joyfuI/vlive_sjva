@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const add_btn = document.getElementById('add_btn');
 const list_div = document.getElementById('list_div');
