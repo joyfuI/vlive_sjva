@@ -35,7 +35,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="schedule_modal_save_btn" class="btn btn-primary" type="button">저장</button>
+                    <button id="schedule_modal_save_btn" class="btn btn-primary" type="button" data-dismiss="modal">
+                        저장
+                    </button>
                     <button class="btn btn-default" type="button" data-dismiss="modal">닫기</button>
                 </div>
             </div>
@@ -43,8 +45,9 @@
     </div>
 
     <script>
-        "use strict";
+        'use strict';
         const package_name = '{{ arg["package_name"] }}';
+        const sub = '{{ arg["sub"] }}';
     </script>
     <script src="{{ url_for('.static', filename='%s.js' % arg['template_name']) }}"></script>
 

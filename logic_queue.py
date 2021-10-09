@@ -2,17 +2,17 @@ import traceback
 import time
 from threading import Thread
 
-from framework.logger import get_logger
-
-from .model import ModelSetting, ModelQueue
+from .plugin import P
+from .model import ModelQueue
 from .api_youtube_dl import APIYoutubeDL
 
-package_name = __name__.split('.')[0]
-logger = get_logger(package_name)
+logger = P.logger
+package_name = P.package_name
+ModelSetting = P.ModelSetting
 
 
 class LogicQueue(object):
-    __thread = None
+    _thread = None
 
     @staticmethod
     def queue_load():
@@ -32,9 +32,9 @@ class LogicQueue(object):
                     logger.debug('queue add fail %s', download['errorCode'])
                     i.delete()
 
-            LogicQueue.__thread = Thread(target=LogicQueue.thread_function)
-            LogicQueue.__thread.daemon = True
-            LogicQueue.__thread.start()
+            LogicQueue._thread = Thread(target=LogicQueue.thread_function)
+            LogicQueue._thread.daemon = True
+            LogicQueue._thread.start()
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
@@ -60,7 +60,7 @@ class LogicQueue(object):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def add_queue(url, options):
+    def add_queue(url: str, options: dict[str, str]):
         try:
             options['webpage_url'] = url
             entity = ModelQueue.create(options)
@@ -74,10 +74,10 @@ class LogicQueue(object):
                 entity.delete()
                 return None
 
-            if not LogicQueue.__thread.is_alive():
-                LogicQueue.__thread = Thread(target=LogicQueue.thread_function)
-                LogicQueue.__thread.daemon = True
-                LogicQueue.__thread.start()
+            if not LogicQueue._thread.is_alive():
+                LogicQueue._thread = Thread(target=LogicQueue.thread_function)
+                LogicQueue._thread.daemon = True
+                LogicQueue._thread.start()
             return entity
         except Exception as e:
             logger.error('Exception:%s', e)

@@ -1,1 +1,10 @@
-{"version": "1.1.0", "name": "vlive", "category_name": "vod", "developer": "joyfuI", "description": "V LIVE \ub2e4\uc6b4\ub85c\ub4dc", "home": "https://github.com/joyfuI/vlive", "more": ""}
+{
+    "version": "2.0.0",
+    "name": "vlive",
+    "category_name": "vod",
+    "icon": "",
+    "developer": "joyfuI",
+    "description": "V LIVE 다운로드",
+    "home": "https://github.com/joyfuI/vlive",
+    "more": ""
+}
