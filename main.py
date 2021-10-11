@@ -182,7 +182,7 @@ class LogicMain(LogicModuleBase):
         return len(form.getlist('download[]'))
 
     @staticmethod
-    def get_scheduler() -> list[dict]:
+    def get_scheduler() -> list:
         scheduler_list = []
         for i in ModelScheduler.get_list(True):
             i['last_time'] = i['last_time'].strftime('%m-%d %H:%M:%S')

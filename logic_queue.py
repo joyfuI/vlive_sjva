@@ -60,7 +60,7 @@ class LogicQueue(object):
             logger.error(traceback.format_exc())
 
     @staticmethod
-    def add_queue(url: str, options: dict[str, str]):
+    def add_queue(url: str, options: dict):
         try:
             options['webpage_url'] = url
             entity = ModelQueue.create(options)
