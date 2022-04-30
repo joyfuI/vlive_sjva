@@ -12,8 +12,8 @@ package_name = P.package_name
 
 
 class ModelScheduler(db.Model):
-    __tablename__ = f'{package_name}_scheduler'
-    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
+    __tablename__ = f"{package_name}_scheduler"
+    __table_args__ = {"mysql_collate": "utf8_general_ci"}
     __bind_key__ = package_name
 
     id = db.Column(db.Integer, primary_key=True)
@@ -28,13 +28,13 @@ class ModelScheduler(db.Model):
 
     def __init__(self, data):
         self.last_time = datetime.now()
-        self.url = data['webpage_url']
-        self.title = data['title']
-        self.count = data['count']
-        self.save_path = data['save_path']
-        self.filename = data['filename']
-        self.is_live = data['is_live']
-        self.key = ''.join([random.choice(string.ascii_lowercase) for _ in range(5)])
+        self.url = data["webpage_url"]
+        self.title = data["title"]
+        self.count = data["count"]
+        self.save_path = data["save_path"]
+        self.filename = data["filename"]
+        self.is_live = data["is_live"]
+        self.key = "".join([random.choice(string.ascii_lowercase) for _ in range(5)])
 
     def __repr__(self):
         return repr(self.as_dict())
@@ -50,7 +50,7 @@ class ModelScheduler(db.Model):
                 tmp = [x.as_dict() for x in tmp]
             return tmp
         except Exception as e:
-            logger.error('Exception:%s', e)
+            logger.error("Exception:%s", e)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -58,7 +58,7 @@ class ModelScheduler(db.Model):
         try:
             return db.session.query(ModelScheduler).filter_by(id=db_id).first()
         except Exception as e:
-            logger.error('Exception:%s %s', e, db_id)
+            logger.error("Exception:%s %s", e, db_id)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -69,7 +69,7 @@ class ModelScheduler(db.Model):
             db.session.commit()
             return entity
         except Exception as e:
-            logger.error('Exception:%s', e)
+            logger.error("Exception:%s", e)
             logger.error(traceback.format_exc())
             return None
 
@@ -80,16 +80,16 @@ class ModelScheduler(db.Model):
             elif isinstance(data, int):
                 self.count = data
             else:
-                if 'save_path' in data:
-                    self.save_path = data['save_path']
-                if 'filename' in data:
-                    self.filename = data['filename']
-                if 'is_live' in data:
-                    self.is_live = data['is_live']
+                if "save_path" in data:
+                    self.save_path = data["save_path"]
+                if "filename" in data:
+                    self.filename = data["filename"]
+                if "is_live" in data:
+                    self.is_live = data["is_live"]
             db.session.commit()
             return True
         except Exception as e:
-            logger.error('Exception:%s %s', e, self.id)
+            logger.error("Exception:%s %s", e, self.id)
             logger.error(traceback.format_exc())
             return False
 
@@ -99,14 +99,14 @@ class ModelScheduler(db.Model):
             db.session.commit()
             return True
         except Exception as e:
-            logger.error('Exception:%s %s', e, self.id)
+            logger.error("Exception:%s %s", e, self.id)
             logger.error(traceback.format_exc())
             return False
 
 
 class ModelQueue(db.Model):
-    __tablename__ = f'{package_name}_queue'
-    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
+    __tablename__ = f"{package_name}_queue"
+    __table_args__ = {"mysql_collate": "utf8_general_ci"}
     __bind_key__ = package_name
 
     id = db.Column(db.Integer, primary_key=True)
@@ -119,10 +119,10 @@ class ModelQueue(db.Model):
 
     def __init__(self, data):
         self.created_time = datetime.now()
-        self.url = data['webpage_url']
-        self.save_path = data['save_path']
-        self.filename = data['filename']
-        self.key = ''.join([random.choice(string.ascii_lowercase) for _ in range(5)])
+        self.url = data["webpage_url"]
+        self.save_path = data["save_path"]
+        self.filename = data["filename"]
+        self.key = "".join([random.choice(string.ascii_lowercase) for _ in range(5)])
         self.index = None
 
     def __repr__(self):
@@ -139,7 +139,7 @@ class ModelQueue(db.Model):
                 tmp = [x.as_dict() for x in tmp]
             return tmp
         except Exception as e:
-            logger.error('Exception:%s', e)
+            logger.error("Exception:%s", e)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -147,7 +147,7 @@ class ModelQueue(db.Model):
         try:
             return db.session.query(ModelQueue).filter_by(id=db_id).first()
         except Exception as e:
-            logger.error('Exception:%s %s', e, db_id)
+            logger.error("Exception:%s %s", e, db_id)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -156,7 +156,7 @@ class ModelQueue(db.Model):
         try:
             entity = db.session.query(ModelQueue).first()
         except Exception as e:
-            logger.error('Exception:%s %s', e, entity)
+            logger.error("Exception:%s %s", e, entity)
             logger.error(traceback.format_exc())
         return entity
 
@@ -165,7 +165,7 @@ class ModelQueue(db.Model):
         try:
             return db.session.query(ModelQueue).count() == 0
         except Exception as e:
-            logger.error('Exception:%s', e)
+            logger.error("Exception:%s", e)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -176,7 +176,7 @@ class ModelQueue(db.Model):
             db.session.commit()
             return entity
         except Exception as e:
-            logger.error('Exception:%s', e)
+            logger.error("Exception:%s", e)
             logger.error(traceback.format_exc())
             return None
 
@@ -186,7 +186,7 @@ class ModelQueue(db.Model):
             db.session.commit()
             return True
         except Exception as e:
-            logger.error('Exception:%s %s', e, self.id)
+            logger.error("Exception:%s %s", e, self.id)
             logger.error(traceback.format_exc())
             return False
 
@@ -196,6 +196,6 @@ class ModelQueue(db.Model):
             db.session.commit()
             return True
         except Exception as e:
-            logger.error('Exception:%s %s', e, self.id)
+            logger.error("Exception:%s %s", e, self.id)
             logger.error(traceback.format_exc())
             return False

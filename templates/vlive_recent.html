@@ -1,47 +1,74 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
-    <link rel="stylesheet" href="{{ url_for('.static', filename='%s.css' % arg['template_name']) }}">
+<link
+  rel="stylesheet"
+  href="{{ url_for('.static', filename='%s.css' % arg['template_name']) }}"
+/>
 
-    {{ macros.setting_input_text_and_buttons('download', 'URL', [['download_btn', '다운로드']], value=arg['url'], placeholder='https://www.vlive.tv/video/ 주소', desc='V LIVE 동영상 주소') }}
-    {{ macros.m_hr() }}
-    <ul class="video_list">
-        {{ arg['recent_html']|safe }}
-    </ul>
+{{ macros.setting_input_text_and_buttons('download', 'URL', [['download_btn',
+'다운로드']], value=arg['url'], placeholder='https://www.vlive.tv/video/ 주소',
+desc='V LIVE 동영상 주소') }} {{ macros.m_hr() }}
+<ul class="video_list">
+  {{ arg['recent_html']|safe }}
+</ul>
 
-    <!-- Modal -->
-    <div id="vlive_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vliveModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">다운로드 추가</h4>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="modal_form">
-                        {{ macros.setting_input_text('url', 'URL', value='', disabled=True) }}
-                        {{ macros.setting_input_text('save_path', '저장 폴더', value=arg['save_path'], placeholder='저장 폴더 경로', desc='템플릿 규칙 사용 불가. 폴더명에 템플릿 규칙을 사용하려면 저장 폴더엔 상위 폴더 경로를 지정하고 파일명에 하위 경로를 추가해주세요.') }}
-                        {{ macros.setting_input_text('filename', '파일명', value=arg['filename'], desc='템플릿 규칙은 https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template 참고') }}
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button id="vlive_modal_save_btn" class="btn btn-primary" type="button" data-dismiss="modal">
-                        추가
-                    </button>
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">닫기</button>
-                </div>
-            </div>
-        </div>
+<!-- Modal -->
+<div
+  id="vlive_modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="vliveModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">다운로드 추가</h4>
+        <button
+          class="close"
+          type="button"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="modal_form">
+          {{ macros.setting_input_text('url', 'URL', value='', disabled=True) }}
+          {{ macros.setting_input_text('save_path', '저장 폴더',
+          value=arg['save_path'], placeholder='저장 폴더 경로', desc='템플릿
+          규칙 사용 불가. 폴더명에 템플릿 규칙을 사용하려면 저장 폴더엔 상위
+          폴더 경로를 지정하고 파일명에 하위 경로를 추가해주세요.') }} {{
+          macros.setting_input_text('filename', '파일명', value=arg['filename'],
+          desc='템플릿 규칙은
+          https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template
+          참고') }}
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          id="vlive_modal_save_btn"
+          class="btn btn-primary"
+          type="button"
+          data-dismiss="modal"
+        >
+          추가
+        </button>
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+          닫기
+        </button>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script>
-        'use strict';
-        const package_name = '{{ arg["package_name"] }}';
-        const sub = '{{ arg["sub"] }}';
-    </script>
-    <script src="{{ url_for('.static', filename='%s.js' % arg['template_name']) }}"></script>
+<script>
+  'use strict';
+  const package_name = '{{ arg["package_name"] }}';
+  const sub = '{{ arg["sub"] }}';
+</script>
+<script src="{{ url_for('.static', filename='%s.js' % arg['template_name']) }}"></script>
 
 {% endblock %}
