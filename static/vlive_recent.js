@@ -12,7 +12,7 @@ function link_click(el) {
 }
 
 const post_ajax = (url, data) =>
-  fetch(`/${package_name}/ajax/${url}`, {
+  fetch(`/${package_name}/ajax${url}`, {
     method: 'POST',
     cache: 'no-cache',
     headers: {

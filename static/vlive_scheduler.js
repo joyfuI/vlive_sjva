@@ -22,7 +22,7 @@ let current_data;
 is_live.disabled = true;
 
 const post_ajax = (url, data) =>
-  fetch(`/${package_name}/ajax/${url}`, {
+  fetch(`/${package_name}/ajax${url}`, {
     method: 'POST',
     cache: 'no-cache',
     headers: {
@@ -108,7 +108,7 @@ list_div.addEventListener('click', (e) => {
     confirm_body.textContent = '해당 스케줄을 삭제하시겠습니까?';
     confirm_button.onclick = (e) => {
       e.preventDefault();
-      post_ajax(`/del_scheduler`, { id: index }).then(reload_list);
+      post_ajax('/del_scheduler', { id: index }).then(reload_list);
     };
     $('#confirm_modal').modal();
   }
