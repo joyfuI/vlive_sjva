@@ -1,6 +1,7 @@
 from typing import Optional
 import traceback
 import os
+from pathlib import Path
 import sqlite3
 import time
 import re
@@ -12,14 +13,14 @@ import requests
 from framework import path_data, scheduler, app, db, celery
 from framework.common.plugin import LogicModuleBase, default_route_socketio
 
-from .plugin import P
+from .plugin import Plugin
 from .logic_queue import LogicQueue
 from .model import ModelScheduler
 from .api_youtube_dl import APIYoutubeDL
 
-logger = P.logger
-package_name = P.package_name
-ModelSetting = P.ModelSetting
+logger = Plugin.logger
+package_name = Plugin.package_name
+ModelSetting = Plugin.ModelSetting
 
 
 class LogicMain(LogicModuleBase):
@@ -32,16 +33,23 @@ class LogicMain(LogicModuleBase):
         "cookiefile_path": "",
     }
 
-    def __init__(self, p):
-        super(LogicMain, self).__init__(p, None, scheduler_desc="V LIVE 새로운 영상 다운로드")
+    def __init__(self, plugin):
+        super(LogicMain, self).__init__(
+            plugin, None, scheduler_desc="V LIVE 새로운 영상 다운로드"
+        )
         self.name = package_name  # 모듈명
-        default_route_socketio(p, self)
+        default_route_socketio(plugin, self)
 
     def plugin_load(self):
         try:
             LogicQueue.queue_load()
-        except Exception as e:
-            logger.error("Exception:%s", e)
+
+            # archive 파일 저장 폴더 생성
+            path = os.path.join(path_data, "db", package_name)
+            if not os.path.isdir(path):
+                os.makedirs(path)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     def process_menu(self, sub, req):
@@ -70,8 +78,8 @@ class LogicMain(LogicModuleBase):
                 arg["filename"] = ModelSetting.get("default_filename")
 
             return render_template(f"{package_name}_{sub}.html", arg=arg)
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
             return render_template("sample.html", title=f"{package_name} - {sub}")
 
@@ -98,10 +106,10 @@ class LogicMain(LogicModuleBase):
                 ret["msg"] = "삭제하였습니다."
 
             return jsonify(ret)
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
-            return jsonify({"ret": "danger", "msg": str(e)})
+            return jsonify({"ret": "danger", "msg": str(error)})
 
     def scheduler_function(self):
         if app.config["config"]["use_celery"]:
@@ -146,8 +154,8 @@ class LogicMain(LogicModuleBase):
             connect.close()
             ModelSetting.set("db_version", LogicMain.db_default["db_version"])
             db.session.flush()
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -155,18 +163,23 @@ class LogicMain(LogicModuleBase):
     def task():
         try:
             for entity in ModelScheduler.get_list():
-                if not entity.is_live:
-                    continue
                 logger.debug("scheduler download %s", entity.url)
-                video_url = LogicMain.get_first_live_video(entity.url)  # 첫번째 영상
+                video_url = LogicMain.get_first_video(
+                    entity.url, "LIVE" if entity.is_live else "VOD"
+                )  # 첫번째 영상
                 if video_url is None or video_url in LogicMain.download_list:
                     continue
+                archive = os.path.join(
+                    path_data, "db", package_name, f"{entity.id}.txt"
+                )
+                Path(archive).touch()
                 download = APIYoutubeDL.download(
                     package_name,
                     entity.key,
                     video_url,
                     filename=entity.filename,
                     save_path=entity.save_path,
+                    archive=archive,
                     start=True,
                     cookiefile=ModelSetting.get("cookiefile_path"),
                 )
@@ -180,8 +193,8 @@ class LogicMain(LogicModuleBase):
                     entity.update()
                 else:
                     logger.debug("scheduler download fail %s", download["errorCode"])
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     download_list = set()
@@ -218,8 +231,9 @@ class LogicMain(LogicModuleBase):
             data = {
                 "save_path": form["save_path"],
                 "filename": form["filename"],
-                "is_live": True
-                # 'is_live': bool(form['is_live']) if str(form['is_live']).lower() != 'false' else False
+                "is_live": bool(form["is_live"])
+                if str(form["is_live"]).lower() != "false"
+                else False,
             }
             ModelScheduler.find(form["db_id"]).update(data)
         else:
@@ -232,8 +246,9 @@ class LogicMain(LogicModuleBase):
                 "count": info_dict["count"],
                 "save_path": form["save_path"],
                 "filename": form["filename"],
-                "is_live": True
-                # 'is_live': bool(form['is_live']) if str(form['is_live']).lower() != 'false' else False
+                "is_live": bool(form["is_live"])
+                if str(form["is_live"]).lower() != "false"
+                else False,
             }
             ModelScheduler.create(data)
         return True
@@ -242,6 +257,7 @@ class LogicMain(LogicModuleBase):
     def del_scheduler(db_id: int):
         logger.debug("del_scheduler %s", db_id)
         ModelScheduler.find(db_id).delete()
+        LogicMain.del_archive(db_id)
 
     @staticmethod
     def get_channel_info(channel_url: str) -> Optional[dict]:
@@ -268,7 +284,7 @@ class LogicMain(LogicModuleBase):
         return channel_info
 
     @staticmethod
-    def get_first_live_video(channel_url: str) -> Optional[str]:
+    def get_first_video(channel_url: str, video_type: str) -> Optional[str]:
         channel_id = channel_url.split("/")[-1]
         url = f"https://www.vlive.tv/globalv-web/vam-web/post/v1.0/channel-{channel_id}/starPosts"
         params = {
@@ -283,7 +299,7 @@ class LogicMain(LogicModuleBase):
         video_url = None
         for data in json["data"]:
             if data["contentType"] == "VIDEO":
-                if data["officialVideo"]["type"] == "LIVE":
+                if data["officialVideo"]["type"] == video_type:
                     video_url = data["url"]
                     break
         return video_url
@@ -314,3 +330,10 @@ class LogicMain(LogicModuleBase):
             r'onclick="vlive.tv.common.chGa\(this\);"|onerror="(.+?)"', "", html
         )
         return html
+
+    @staticmethod
+    def del_archive(db_id):
+        archive = os.path.join(path_data, "db", package_name, f"{db_id}.txt")
+        logger.debug("delete %s", archive)
+        if os.path.isfile(archive):
+            os.remove(archive)

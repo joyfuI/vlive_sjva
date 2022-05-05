@@ -13,7 +13,7 @@ from framework.common.plugin import (
 )
 
 
-class P(object):
+class Plugin(object):
     package_name = __name__.split(".", maxsplit=1)[0]
     logger = get_logger(package_name)
     blueprint = Blueprint(
@@ -37,7 +37,7 @@ class P(object):
     }
 
     plugin_info = {
-        "version": "2.0.1",
+        "version": "2.1.0",
         "name": package_name,
         "category_name": "vod",
         "icon": "",
@@ -56,23 +56,23 @@ class P(object):
 def initialize():
     try:
         app.config["SQLALCHEMY_BINDS"][
-            P.package_name
-        ] = f"sqlite:///{os.path.join(path_data, 'db', f'{P.package_name}.db')}"
+            Plugin.package_name
+        ] = f"sqlite:///{os.path.join(path_data, 'db', f'{Plugin.package_name}.db')}"
         Util.save_from_dict_to_json(
-            P.plugin_info, os.path.join(os.path.dirname(__file__), "info.json")
+            Plugin.plugin_info, os.path.join(os.path.dirname(__file__), "info.json")
         )
 
         # 로드할 모듈 정의
         from .main import LogicMain
 
-        P.module_list = [LogicMain(P)]
+        Plugin.module_list = [LogicMain(Plugin)]
 
-        P.logic = Logic(P)
-        default_route_single_module(P)
-    except Exception as e:
-        P.logger.error("Exception:%s", e)
-        P.logger.error(traceback.format_exc())
+        Plugin.logic = Logic(Plugin)
+        default_route_single_module(Plugin)
+    except Exception as error:
+        Plugin.logger.error("Exception:%s", error)
+        Plugin.logger.error(traceback.format_exc())
 
 
-logger = P.logger
+logger = Plugin.logger
 initialize()

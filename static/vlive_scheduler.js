@@ -19,8 +19,6 @@ const confirm_button = document.getElementById('confirm_button');
 
 let current_data;
 
-is_live.disabled = true;
-
 const post_ajax = (url, data) =>
   fetch(`/${package_name}/ajax${url}`, {
     method: 'POST',
@@ -48,7 +46,7 @@ const make_item = (data) => {
   tmp += m_col2(9, data.path);
   tmp += m_row_end();
   tmp += m_row_start(0);
-  tmp += m_col2(3, 'LIVE만 다운로드', 'right');
+  tmp += m_col2(3, 'LIVE 다운로드', 'right');
   tmp += m_col2(9, data.is_live ? 'O' : 'X');
   tmp += m_row_end();
   str += m_col(5, tmp);

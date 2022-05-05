@@ -2,13 +2,13 @@ import traceback
 import time
 from threading import Thread
 
-from .plugin import P
+from .plugin import Plugin
 from .model import ModelQueue
 from .api_youtube_dl import APIYoutubeDL
 
-logger = P.logger
-package_name = P.package_name
-ModelSetting = P.ModelSetting
+logger = Plugin.logger
+package_name = Plugin.package_name
+ModelSetting = Plugin.ModelSetting
 
 
 class LogicQueue(object):
@@ -42,8 +42,8 @@ class LogicQueue(object):
             LogicQueue._thread = Thread(target=LogicQueue.thread_function)
             LogicQueue._thread.daemon = True
             LogicQueue._thread.start()
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -64,8 +64,8 @@ class LogicQueue(object):
                 else:
                     logger.debug("queue download fail %s", start["errorCode"])
                 entity.delete()
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -94,7 +94,7 @@ class LogicQueue(object):
                 LogicQueue._thread.daemon = True
                 LogicQueue._thread.start()
             return entity
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
             return None

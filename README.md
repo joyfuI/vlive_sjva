@@ -18,6 +18,10 @@ cookiefile 추출 방법은 [여기](https://github.com/ytdl-org/youtube-dl#how-
 
 ## Changelog
 
+v2.1.0
+
+- 다시보기 다운로드 기능 추가
+
 v2.0.1
 
 - 파이썬 3.8 호환성 문제 수정

@@ -1,7 +1,7 @@
-from .plugin import P
+from .plugin import Plugin
 
-blueprint = P.blueprint
-menu = P.menu
-plugin_load = P.logic.plugin_load
-plugin_unload = P.logic.plugin_unload
-plugin_info = P.plugin_info
+blueprint = Plugin.blueprint
+menu = Plugin.menu
+plugin_load = Plugin.logic.plugin_load
+plugin_unload = Plugin.logic.plugin_unload
+plugin_info = Plugin.plugin_info

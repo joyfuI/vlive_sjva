@@ -40,8 +40,8 @@ macros.m_hr_head_bottom() }}
           macros.setting_input_text('filename', '파일명', value=arg['filename'],
           desc='템플릿 규칙은
           https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template
-          참고') }} {{ macros.setting_checkbox('is_live', 'LIVE만 다운로드',
-          value='True', desc='지원 예정 기능, 현재 LIVE만 다운로드 가능') }}
+          참고') }} {{ macros.setting_checkbox('is_live', 'LIVE 다운로드',
+          value='True', desc=['On : LIVE 다운로드', 'Off : VOD 다운로드']) }}
         </form>
       </div>
       <div class="modal-footer">

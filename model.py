@@ -5,10 +5,10 @@ from datetime import datetime
 
 from framework import db
 
-from .plugin import P
+from .plugin import Plugin
 
-logger = P.logger
-package_name = P.package_name
+logger = Plugin.logger
+package_name = Plugin.package_name
 
 
 class ModelScheduler(db.Model):
@@ -49,16 +49,16 @@ class ModelScheduler(db.Model):
             if by_dict:
                 tmp = [x.as_dict() for x in tmp]
             return tmp
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     @staticmethod
     def find(db_id: int):
         try:
             return db.session.query(ModelScheduler).filter_by(id=db_id).first()
-        except Exception as e:
-            logger.error("Exception:%s %s", e, db_id)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, db_id)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -68,8 +68,8 @@ class ModelScheduler(db.Model):
             db.session.add(entity)
             db.session.commit()
             return entity
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
             return None
 
@@ -88,8 +88,8 @@ class ModelScheduler(db.Model):
                     self.is_live = data["is_live"]
             db.session.commit()
             return True
-        except Exception as e:
-            logger.error("Exception:%s %s", e, self.id)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, self.id)
             logger.error(traceback.format_exc())
             return False
 
@@ -98,8 +98,8 @@ class ModelScheduler(db.Model):
             db.session.delete(self)
             db.session.commit()
             return True
-        except Exception as e:
-            logger.error("Exception:%s %s", e, self.id)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, self.id)
             logger.error(traceback.format_exc())
             return False
 
@@ -138,16 +138,16 @@ class ModelQueue(db.Model):
             if by_dict:
                 tmp = [x.as_dict() for x in tmp]
             return tmp
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     @staticmethod
     def find(db_id: int):
         try:
             return db.session.query(ModelQueue).filter_by(id=db_id).first()
-        except Exception as e:
-            logger.error("Exception:%s %s", e, db_id)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, db_id)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -155,8 +155,8 @@ class ModelQueue(db.Model):
         entity = None
         try:
             entity = db.session.query(ModelQueue).first()
-        except Exception as e:
-            logger.error("Exception:%s %s", e, entity)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, entity)
             logger.error(traceback.format_exc())
         return entity
 
@@ -164,8 +164,8 @@ class ModelQueue(db.Model):
     def is_empty() -> bool:
         try:
             return db.session.query(ModelQueue).count() == 0
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
 
     @staticmethod
@@ -175,8 +175,8 @@ class ModelQueue(db.Model):
             db.session.add(entity)
             db.session.commit()
             return entity
-        except Exception as e:
-            logger.error("Exception:%s", e)
+        except Exception as error:
+            logger.error("Exception:%s", error)
             logger.error(traceback.format_exc())
             return None
 
@@ -185,8 +185,8 @@ class ModelQueue(db.Model):
             self.index = index
             db.session.commit()
             return True
-        except Exception as e:
-            logger.error("Exception:%s %s", e, self.id)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, self.id)
             logger.error(traceback.format_exc())
             return False
 
@@ -195,7 +195,7 @@ class ModelQueue(db.Model):
             db.session.delete(self)
             db.session.commit()
             return True
-        except Exception as e:
-            logger.error("Exception:%s %s", e, self.id)
+        except Exception as error:
+            logger.error("Exception:%s %s", error, self.id)
             logger.error(traceback.format_exc())
             return False
