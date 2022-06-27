@@ -58,6 +58,7 @@ class LogicMain(LogicModuleBase):
                 "package_name": package_name,
                 "sub": package_name,
                 "template_name": f"{package_name}_{sub}",
+                "package_version": Plugin.plugin_info["version"],
             }
 
             if sub == "setting":
