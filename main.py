@@ -56,7 +56,7 @@ class LogicMain(LogicModuleBase):
         try:
             arg = {
                 "package_name": package_name,
-                "sub": package_name,
+                "sub": sub,
                 "template_name": f"{package_name}_{sub}",
                 "package_version": Plugin.plugin_info["version"],
             }
