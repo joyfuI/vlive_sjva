@@ -2,19 +2,18 @@ import os
 import traceback
 
 from flask import Blueprint
-
 from framework import app, path_data
-from framework.logger import get_logger
-from framework.util import Util
 from framework.common.plugin import (
-    get_model_setting,
     Logic,
     default_route_single_module,
+    get_model_setting,
 )
+from framework.logger import get_logger
+from framework.util import Util
 
 
 class Plugin(object):
-    package_name = __name__.split(".", maxsplit=1)[0]
+    package_name = __name__.split(".", maxsplit=1)[0].removesuffix("_sjva")
     logger = get_logger(package_name)
     blueprint = Blueprint(
         package_name,
